@@ -20,6 +20,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: rsync --quiet $TRAVIS_BUILD_DIR/kontur_transfer_bot root@78.24.216.44:/opt/kontur_transfer_bot/
+  script: rsync --quiet $TRAVIS_BUILD_DIR/kontur_transfer_bot deploy@78.24.216.44:/opt/kontur_transfer_bot/
   on:
     branch: master
