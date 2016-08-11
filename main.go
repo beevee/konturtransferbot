@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"sort"
 	"time"
 
@@ -109,7 +110,7 @@ func findBestTripMatches(now time.Time, departurePoint busStop) (*trip, *trip) {
 }
 
 func main() {
-	bot, err := telebot.NewBot("264505521:AAEsODoEvNj5cgi4r6vJR9znlZ4lBQ2okGQ")
+	bot, err := telebot.NewBot(os.Getenv("KONTUR_TRANSFER_BOT_TOKEN"))
 	if err != nil {
 		log.Fatalln(err)
 	}
