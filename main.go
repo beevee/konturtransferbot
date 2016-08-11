@@ -130,7 +130,8 @@ func main() {
 		log.Printf("%s %s (username %s) said %s", message.Sender.FirstName, message.Sender.LastName, message.Sender.Username, message.Text)
 
 		var reply string
-		now := message.Time()
+		ekbTimezone, _ := time.LoadLocation("Asia/Yekaterinburg")
+		now := time.Now().In(ekbTimezone)
 
 		switch message.Text {
 		case "Хочу на работу":
