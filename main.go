@@ -127,6 +127,8 @@ func main() {
 	bot.Listen(messages, 1*time.Second)
 
 	for message := range messages {
+		log.Printf("%s %s (username %s) said %s", message.Sender.FirstName, message.Sender.LastName, message.Sender.Username, message.Text)
+
 		var reply string
 		now := message.Time()
 
