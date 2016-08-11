@@ -1,7 +1,7 @@
 language: go
 
 addons:
-  ssh_known_hosts: beevee.ru
+  ssh_known_hosts: 78.24.216.44
 
 go:
 - tip
