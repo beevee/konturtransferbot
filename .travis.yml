@@ -18,10 +18,14 @@ before_deploy:
 - ssh-add $TRAVIS_BUILD_DIR/deploy_rsa
 
 deploy:
-  provider: script
+- provider: script
   skip_cleanup: true
   script:
   - rsync --quiet $TRAVIS_BUILD_DIR/kontur_transfer_bot deploy@78.24.216.44:/opt/kontur_transfer_bot/
+  on:
+    branch: master
+- provider: script
+  script:
   - ssh deploy@78.24.216.44 'sudo systemctl restart kontur_transfer_bot'
   on:
     branch: master
