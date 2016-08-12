@@ -156,14 +156,14 @@ func main() {
 			continue
 
 		case "Все рейсы от Геологической":
-			bot.SendMessage(message.Chat, fmt.Sprintf("В будни:\n%s", theSchedule.workDayRouteToOffice.toString()), defaultMessageOptions)
-			bot.SendMessage(message.Chat, fmt.Sprintf("В выходные:\n%s", theSchedule.holidayRouteToOffice.toString()), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteToOffice.toString()), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteToOffice.toString()), defaultMessageOptions)
 			continue
 		case "Все рейсы от офиса":
-			bot.SendMessage(message.Chat, fmt.Sprintf("В будни:\n%s", theSchedule.workDayRouteFromOffice.toString()), defaultMessageOptions)
-			bot.SendMessage(message.Chat, fmt.Sprintf("В выходные:\n%s", theSchedule.holidayRouteFromOffice.toString()), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteFromOffice.toString()), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteFromOffice.toString()), defaultMessageOptions)
 			continue
 		}
-		bot.SendMessage(message.Chat, "Привет! Я понимаю только две команды.", defaultMessageOptions)
+		bot.SendMessage(message.Chat, "Привет! Я могу подсказать расписание трансфера по дежурному маршруту.", defaultMessageOptions)
 	}
 }
