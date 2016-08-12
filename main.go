@@ -40,6 +40,16 @@ func (r route) String() string {
 	return result
 }
 
+func buildRoute(departures []string) route {
+	result := make([]timeWithoutDate, len(departures))
+	for index, departure := range departures {
+		twd := timeWithoutDate{}
+		fmt.Sscanf(departure, "%d:%d", &twd.hour, &twd.minute)
+		result[index] = twd
+	}
+	return result
+}
+
 type schedule struct {
 	workDayRouteToOffice   route
 	workDayRouteFromOffice route
@@ -53,16 +63,6 @@ type ScheduleYaml struct {
 	WorkDayRouteFromOffice []string `yaml:"WorkDayRouteFromOffice"`
 	HolidayRouteToOffice   []string `yaml:"HolidayRouteToOffice"`
 	HolidayRouteFromOffice []string `yaml:"HolidayRouteFromOffice"`
-}
-
-func buildRoute(departures []string) route {
-	result := make([]timeWithoutDate, len(departures))
-	for index, departure := range departures {
-		twd := timeWithoutDate{}
-		fmt.Sscanf(departure, "%d:%d", &twd.hour, &twd.minute)
-		result[index] = twd
-	}
-	return result
 }
 
 func buildSchedule(data []byte) schedule {
