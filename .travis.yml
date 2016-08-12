@@ -25,6 +25,12 @@ deploy:
   on:
     branch: master
 - provider: script
+  skip_cleanup: true
+  script:
+  - rsync --quiet $TRAVIS_BUILD_DIR/schedule.yml deploy@78.24.216.44:/opt/kontur_transfer_bot/
+  on:
+    branch: master
+- provider: script
   script:
   - ssh deploy@78.24.216.44 'sudo systemctl restart kontur_transfer_bot'
   on:

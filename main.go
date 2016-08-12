@@ -57,7 +57,7 @@ func buildRoute(departures []string) route {
 }
 
 func buildSchedule() schedule {
-	data, _ := ioutil.ReadFile("schedule.yaml")
+	data, _ := ioutil.ReadFile("schedule.yml")
 	scheduleYaml := ScheduleYaml{}
 	err := yaml.Unmarshal([]byte(data), &scheduleYaml)
 	if err != nil {
