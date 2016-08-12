@@ -15,8 +15,8 @@ import (
 const (
 	buttonToOfficeLabel           = "Хочу на работу"
 	buttonFromOfficeLabel         = "Хочу домой"
-	buttonScheduleToOfficeLabel   = "Все рейсы от Геологической"
-	buttonScheduleFromOfficeLabel = "Все рейсы от офиса"
+	buttonScheduleToOfficeLabel   = "Все рейсы на работу"
+	buttonScheduleFromOfficeLabel = "Все рейсы домой"
 )
 
 type timeWithoutDate struct {
@@ -107,6 +107,7 @@ func main() {
 				[]string{buttonToOfficeLabel, buttonFromOfficeLabel},
 				[]string{buttonScheduleToOfficeLabel, buttonScheduleFromOfficeLabel},
 			},
+			ResizeKeyboard: true,
 		},
 	}
 	var monetizationMessage = "Монетизация! Промокод Gett на первую поездку - GTFUNKP, Яндекс.Такси - daf3qsau, Uber - ykt6m, Wheely - MHPRL."
@@ -164,13 +165,13 @@ func main() {
 			continue
 
 		case buttonScheduleToOfficeLabel:
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteToOffice), defaultMessageOptions)
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteToOffice), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы от Геологической в будни:\n%s", theSchedule.workDayRouteToOffice), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы от Геологической в выходные:\n%s", theSchedule.holidayRouteToOffice), defaultMessageOptions)
 			continue
 
 		case buttonScheduleFromOfficeLabel:
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteFromOffice), defaultMessageOptions)
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteFromOffice), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы от офиса в будни:\n%s", theSchedule.workDayRouteFromOffice), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы от офиса в выходные:\n%s", theSchedule.holidayRouteFromOffice), defaultMessageOptions)
 			continue
 		}
 		bot.SendMessage(message.Chat, "Привет! Я могу подсказать расписание трансфера по дежурному маршруту.", defaultMessageOptions)
