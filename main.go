@@ -3,14 +3,16 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"sort"
 	"time"
 
+	"github.com/op/go-logging"
 	"github.com/tucnak/telebot"
 	"gopkg.in/yaml.v2"
 )
+
+var log *logging.Logger
 
 const (
 	buttonToOfficeLabel           = "Хочу на работу"
@@ -68,7 +70,7 @@ func buildSchedule() schedule {
 	scheduleYaml := ScheduleYaml{}
 	err := yaml.Unmarshal([]byte(data), &scheduleYaml)
 	if err != nil {
-		log.Print(err)
+		log.Fatal(err)
 	}
 	result := schedule{
 		workDayRouteToOffice:   buildRoute(scheduleYaml.WorkDayRouteToOffice),
@@ -94,11 +96,17 @@ func findBestTripMatches(now time.Time, r route) (*timeWithoutDate, *timeWithout
 }
 
 func main() {
+	log = logging.MustGetLogger("kontur_transfer_bot")
+	logFile, _ := os.OpenFile("kontur_transfer_bot.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	logBackend := logging.NewLogBackend(logFile, "", 0)
+	logging.SetFormatter(logging.MustStringFormatter("%{time:2006-01-02 15:04:05}\t%{level}\t%{message}"))
+	logging.SetBackend(logBackend)
+
 	theSchedule := buildSchedule()
 
 	bot, err := telebot.NewBot(os.Getenv("KONTUR_TRANSFER_BOT_TOKEN"))
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 
 	var defaultMessageOptions = &telebot.SendOptions{
@@ -116,7 +124,7 @@ func main() {
 	bot.Listen(messages, 1*time.Second)
 
 	for message := range messages {
-		log.Printf("%s %s (username %s) said %s", message.Sender.FirstName, message.Sender.LastName, message.Sender.Username, message.Text)
+		log.Infof("%s %s (username %s, chat id %d) said %s", message.Sender.FirstName, message.Sender.LastName, message.Sender.Username, message.Chat.ID, message.Text)
 
 		var reply string
 		var currentRoute route
