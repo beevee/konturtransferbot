@@ -121,6 +121,7 @@ func main() {
 			},
 		},
 	}
+	var monetizationMessage = "Монетизация! Промокод Gett на первую поездку - GTFUNKP, Яндекс.Такси - daf3qsau, Uber - ykt6m, Wheely - MHPRL."
 
 	messages := make(chan telebot.Message)
 	bot.Listen(messages, 1*time.Second)
@@ -151,9 +152,11 @@ func main() {
 				reply = fmt.Sprintf("Ближайший дежурный рейс от офиса будет в %02d:%02d.", bestTrip.departureTime.hour, bestTrip.departureTime.minute)
 				if nextBestTrip != nil {
 					reply += fmt.Sprintf(" Следующий - в %02d:%02d.", nextBestTrip.departureTime.hour, nextBestTrip.departureTime.minute)
+				} else {
+					reply += " Это последний на сегодня рейс, дальше - только на такси. " + monetizationMessage
 				}
 			} else {
-				reply = "Сегодня уехать домой уже не получится :( Придется остаться на ночь."
+				reply = "Сегодня уехать домой уже не получится :( Придется остаться на ночь или ехать на такси. " + monetizationMessage
 			}
 			bot.SendMessage(message.Chat, reply, defaultMessageOptions)
 			continue
