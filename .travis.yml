@@ -1,10 +1,10 @@
 language: go
 
 addons:
-  ssh_known_hosts: 78.24.216.44
+  ssh_known_hosts: beevee.ru
 
 go:
-- tip
+- 1.6
 
 script:
 - go build
@@ -21,17 +21,17 @@ deploy:
 - provider: script
   skip_cleanup: true
   script:
-  - rsync --quiet $TRAVIS_BUILD_DIR/kontur_transfer_bot deploy@78.24.216.44:/opt/kontur_transfer_bot/
+  - rsync --quiet $TRAVIS_BUILD_DIR/kontur_transfer_bot deploy@beevee.ru:/opt/kontur_transfer_bot/
   on:
     branch: master
 - provider: script
   skip_cleanup: true
   script:
-  - rsync --quiet $TRAVIS_BUILD_DIR/schedule.yml deploy@78.24.216.44:/opt/kontur_transfer_bot/
+  - rsync --quiet $TRAVIS_BUILD_DIR/schedule.yml deploy@beevee.ru:/opt/kontur_transfer_bot/
   on:
     branch: master
 - provider: script
   script:
-  - ssh deploy@78.24.216.44 'sudo systemctl restart kontur_transfer_bot'
+  - ssh deploy@beevee.ru 'sudo systemctl restart kontur_transfer_bot'
   on:
     branch: master
