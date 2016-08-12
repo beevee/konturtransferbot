@@ -17,16 +17,16 @@ type timeWithoutDate struct {
 	minute int
 }
 
-func (twd *timeWithoutDate) toString() string {
+func (twd timeWithoutDate) String() string {
 	return fmt.Sprintf("%02d:%02d", twd.hour, twd.minute)
 }
 
 type route []timeWithoutDate
 
-func (r *route) toString() string {
+func (r route) String() string {
 	var result string
-	for _, departure := range *r {
-		result += fmt.Sprintf("%s\n", departure.toString())
+	for _, departure := range r {
+		result += fmt.Sprintf("%s\n", departure)
 	}
 	return result
 }
@@ -69,7 +69,6 @@ func buildSchedule() schedule {
 		holidayRouteToOffice:   buildRoute(scheduleYaml.HolidayRouteToOffice),
 		holidayRouteFromOffice: buildRoute(scheduleYaml.HolidayRouteFromOffice),
 	}
-	log.Print(result)
 	return result
 }
 
@@ -112,11 +111,12 @@ func main() {
 		log.Printf("%s %s (username %s) said %s", message.Sender.FirstName, message.Sender.LastName, message.Sender.Username, message.Text)
 
 		var reply string
+		var currentRoute route
+
 		ekbTimezone, _ := time.LoadLocation("Asia/Yekaterinburg")
 		now := time.Now().In(ekbTimezone)
-
-		var currentRoute route
 		isWorkDay := now.Weekday() != time.Sunday && now.Weekday() != time.Saturday
+
 		switch message.Text {
 		case "Хочу на работу":
 			if isWorkDay {
@@ -126,15 +126,16 @@ func main() {
 			}
 			bestTrip, nextBestTrip := findBestTripMatches(now, currentRoute)
 			if bestTrip != nil {
-				reply = fmt.Sprintf("Ближайший дежурный рейс от Геологической будет в %s.", bestTrip.toString())
+				reply = fmt.Sprintf("Ближайший дежурный рейс от Геологической будет в %s.", bestTrip)
 				if nextBestTrip != nil {
-					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip.toString())
+					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip)
 				}
 			} else {
 				reply = "Сегодня уехать на работу уже не получится :( Удачи завтра!"
 			}
 			bot.SendMessage(message.Chat, reply, defaultMessageOptions)
 			continue
+
 		case "Хочу домой":
 			if isWorkDay {
 				currentRoute = theSchedule.workDayRouteFromOffice
@@ -143,9 +144,9 @@ func main() {
 			}
 			bestTrip, nextBestTrip := findBestTripMatches(now, currentRoute)
 			if bestTrip != nil {
-				reply = fmt.Sprintf("Ближайший дежурный рейс от офиса будет в %s.", bestTrip.toString())
+				reply = fmt.Sprintf("Ближайший дежурный рейс от офиса будет в %s.", bestTrip)
 				if nextBestTrip != nil {
-					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip.toString())
+					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip)
 				} else {
 					reply += " Это последний на сегодня рейс, дальше - только на такси. " + monetizationMessage
 				}
@@ -156,12 +157,13 @@ func main() {
 			continue
 
 		case "Все рейсы от Геологической":
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteToOffice.toString()), defaultMessageOptions)
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteToOffice.toString()), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteToOffice), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteToOffice), defaultMessageOptions)
 			continue
+
 		case "Все рейсы от офиса":
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteFromOffice.toString()), defaultMessageOptions)
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteFromOffice.toString()), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteFromOffice), defaultMessageOptions)
+			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteFromOffice), defaultMessageOptions)
 			continue
 		}
 		bot.SendMessage(message.Chat, "Привет! Я могу подсказать расписание трансфера по дежурному маршруту.", defaultMessageOptions)
