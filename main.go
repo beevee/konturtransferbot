@@ -29,14 +29,13 @@ type trip struct {
 }
 
 var trips = [...]trip{
-	trip{city, timeWithoutDate{7, 0}, false},
 	trip{city, timeWithoutDate{7, 30}, false},
 	trip{city, timeWithoutDate{8, 0}, false},
 	trip{city, timeWithoutDate{8, 30}, false},
 	trip{city, timeWithoutDate{9, 0}, false},
 	trip{city, timeWithoutDate{9, 30}, false},
 	trip{city, timeWithoutDate{10, 0}, false},
-	trip{city, timeWithoutDate{10, 30}, false},
+	trip{city, timeWithoutDate{10, 40}, false},
 	trip{city, timeWithoutDate{11, 10}, false},
 	trip{city, timeWithoutDate{11, 40}, false},
 	trip{city, timeWithoutDate{12, 20}, false},
