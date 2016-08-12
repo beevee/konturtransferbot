@@ -12,6 +12,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const (
+	buttonToOfficeLabel           = "Хочу на работу"
+	buttonFromOfficeLabel         = "Хочу домой"
+	buttonScheduleToOfficeLabel   = "Все рейсы от Геологической"
+	buttonScheduleFromOfficeLabel = "Все рейсы от офиса"
+)
+
 type timeWithoutDate struct {
 	hour   int
 	minute int
@@ -97,8 +104,8 @@ func main() {
 	var defaultMessageOptions = &telebot.SendOptions{
 		ReplyMarkup: telebot.ReplyMarkup{
 			CustomKeyboard: [][]string{
-				[]string{"Хочу на работу", "Хочу домой"},
-				[]string{"Все рейсы от Геологической", "Все рейсы от офиса"},
+				[]string{buttonToOfficeLabel, buttonFromOfficeLabel},
+				[]string{buttonScheduleToOfficeLabel, buttonScheduleFromOfficeLabel},
 			},
 		},
 	}
@@ -118,7 +125,7 @@ func main() {
 		isWorkDay := now.Weekday() != time.Sunday && now.Weekday() != time.Saturday
 
 		switch message.Text {
-		case "Хочу на работу":
+		case buttonToOfficeLabel:
 			if isWorkDay {
 				currentRoute = theSchedule.workDayRouteToOffice
 			} else {
@@ -136,7 +143,7 @@ func main() {
 			bot.SendMessage(message.Chat, reply, defaultMessageOptions)
 			continue
 
-		case "Хочу домой":
+		case buttonFromOfficeLabel:
 			if isWorkDay {
 				currentRoute = theSchedule.workDayRouteFromOffice
 			} else {
@@ -156,12 +163,12 @@ func main() {
 			bot.SendMessage(message.Chat, reply, defaultMessageOptions)
 			continue
 
-		case "Все рейсы от Геологической":
+		case buttonScheduleToOfficeLabel:
 			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteToOffice), defaultMessageOptions)
 			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteToOffice), defaultMessageOptions)
 			continue
 
-		case "Все рейсы от офиса":
+		case buttonScheduleFromOfficeLabel:
 			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в будни:\n%s", theSchedule.workDayRouteFromOffice), defaultMessageOptions)
 			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы в выходные:\n%s", theSchedule.holidayRouteFromOffice), defaultMessageOptions)
 			continue
