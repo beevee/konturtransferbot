@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -35,7 +36,7 @@ func TestRoute(t *testing.T) {
 		}
 		Convey("It should parse correctly", func() {
 			r := buildRoute(rString)
-			Convey("And its numerical representation should be correct and in the same order", func() {
+			Convey("Its numerical representation should be correct and in the same order", func() {
 				So(r[0].hour, ShouldEqual, 7)
 				So(r[0].minute, ShouldEqual, 30)
 				So(r[1].hour, ShouldEqual, 11)
@@ -65,7 +66,7 @@ HolidayRouteFromOffice:
   - "18:00"`
 		Convey("It should parse into a schedule structure", func() {
 			s := buildSchedule([]byte(sYaml))
-			Convey("And its entries should be correct and in the same order", func() {
+			Convey("Its entries should be correct and in the same order", func() {
 				So(s.workDayRouteToOffice[0].String(), ShouldEqual, "07:30")
 				So(s.workDayRouteToOffice[1].String(), ShouldEqual, "08:00")
 				So(s.workDayRouteToOffice[2].String(), ShouldEqual, "20:00")
@@ -79,6 +80,27 @@ HolidayRouteFromOffice:
 				So(s.workDayRouteFromOffice[3].String(), ShouldEqual, "20:50")
 
 				So(s.holidayRouteFromOffice[0].String(), ShouldEqual, "18:00")
+			})
+
+			Convey("It should correctly find two best trips", func() {
+				now, _ := time.Parse("15:04", "07:00")
+				bestTrip, nextBestTrip := findBestTripMatches(now, s.workDayRouteToOffice)
+				So(bestTrip.String(), ShouldEqual, "07:30")
+				So(nextBestTrip.String(), ShouldEqual, "08:00")
+			})
+
+			Convey("It should correctly find one best trip", func() {
+				now, _ := time.Parse("15:04", "20:15")
+				bestTrip, nextBestTrip := findBestTripMatches(now, s.workDayRouteToOffice)
+				So(bestTrip.String(), ShouldEqual, "20:30")
+				So(nextBestTrip, ShouldBeNil)
+			})
+
+			Convey("It should not offer trips more than (roughly) 5 hours in advance", func() {
+				now, _ := time.Parse("15:04", "02:25")
+				bestTrip, nextBestTrip := findBestTripMatches(now, s.workDayRouteToOffice)
+				So(bestTrip, ShouldBeNil)
+				So(nextBestTrip, ShouldBeNil)
 			})
 		})
 	})
