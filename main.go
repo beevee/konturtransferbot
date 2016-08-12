@@ -57,6 +57,20 @@ type schedule struct {
 	holidayRouteFromOffice route
 }
 
+func (s schedule) findCorrectRoute(now time.Time, toOffice bool) route {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+		if toOffice {
+			return s.holidayRouteToOffice
+		}
+		return s.holidayRouteFromOffice
+	}
+
+	if toOffice {
+		return s.workDayRouteToOffice
+	}
+	return s.workDayRouteFromOffice
+}
+
 // ScheduleYaml - модель расписания для конфига
 type ScheduleYaml struct {
 	WorkDayRouteToOffice   []string `yaml:"WorkDayRouteToOffice"`
@@ -137,15 +151,10 @@ func main() {
 
 		ekbTimezone, _ := time.LoadLocation("Asia/Yekaterinburg")
 		now := time.Now().In(ekbTimezone)
-		isWorkDay := now.Weekday() != time.Sunday && now.Weekday() != time.Saturday
 
 		switch message.Text {
 		case buttonToOfficeLabel:
-			if isWorkDay {
-				currentRoute = theSchedule.workDayRouteToOffice
-			} else {
-				currentRoute = theSchedule.holidayRouteToOffice
-			}
+			currentRoute = theSchedule.findCorrectRoute(now, true)
 			bestTrip, nextBestTrip := findBestTripMatches(now, currentRoute)
 			if bestTrip != nil {
 				reply = fmt.Sprintf("Ближайший дежурный рейс от Геологической будет в %s.", bestTrip)
@@ -154,12 +163,8 @@ func main() {
 				}
 			} else {
 				reply = "В ближайшие несколько часов уехать на работу на трансфере не получится. Лучше лечь поспать и поехать с утра. Первые рейсы от Геологической: "
-				nextDayIsWorkDay := now.Weekday() != time.Friday && now.Weekday() != time.Saturday
-				if nextDayIsWorkDay {
-					currentRoute = theSchedule.workDayRouteToOffice
-				} else {
-					currentRoute = theSchedule.holidayRouteToOffice
-				}
+				nextDay := now.Add(24 * time.Hour)
+				currentRoute = theSchedule.findCorrectRoute(nextDay, true)
 				for index, trip := range currentRoute {
 					if trip.hour >= 12 || index >= len(currentRoute)-1 {
 						reply += fmt.Sprintf("%s.", trip)
@@ -172,11 +177,7 @@ func main() {
 			continue
 
 		case buttonFromOfficeLabel:
-			if isWorkDay {
-				currentRoute = theSchedule.workDayRouteFromOffice
-			} else {
-				currentRoute = theSchedule.holidayRouteFromOffice
-			}
+			currentRoute = theSchedule.findCorrectRoute(now, false)
 			bestTrip, nextBestTrip := findBestTripMatches(now, currentRoute)
 			if bestTrip != nil {
 				reply = fmt.Sprintf("Ближайший дежурный рейс от офиса будет в %s.", bestTrip)

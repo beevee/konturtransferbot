@@ -82,6 +82,18 @@ HolidayRouteFromOffice:
 				So(s.holidayRouteFromOffice[0].String(), ShouldEqual, "18:00")
 			})
 
+			Convey("It should correctly identify Friday as a workday", func() {
+				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 07:00")
+				So(s.findCorrectRoute(now, true).String(), ShouldEqual, s.workDayRouteToOffice.String())
+				So(s.findCorrectRoute(now, false).String(), ShouldEqual, s.workDayRouteFromOffice.String())
+			})
+
+			Convey("It should correctly identify Sunday as a holiday", func() {
+				now, _ := time.Parse("02.01.2006 15:04", "14.08.2016 07:00")
+				So(s.findCorrectRoute(now, true).String(), ShouldEqual, s.holidayRouteToOffice.String())
+				So(s.findCorrectRoute(now, false).String(), ShouldEqual, s.holidayRouteFromOffice.String())
+			})
+
 			Convey("It should correctly find two best trips", func() {
 				now, _ := time.Parse("15:04", "07:00")
 				bestTrip, nextBestTrip := findBestTripMatches(now, s.workDayRouteToOffice)
