@@ -133,13 +133,26 @@ func main() {
 				currentRoute = theSchedule.holidayRouteToOffice
 			}
 			bestTrip, nextBestTrip := findBestTripMatches(now, currentRoute)
-			if bestTrip != nil {
+			if now.Hour() > 5 && bestTrip != nil {
 				reply = fmt.Sprintf("Ближайший дежурный рейс от Геологической будет в %s.", bestTrip)
 				if nextBestTrip != nil {
 					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip)
 				}
 			} else {
-				reply = "Сегодня уехать на работу уже не получится :( Удачи завтра!"
+				reply = "Сейчас уехать на работу на трансфере уже не получится. Лучше лечь поспать и поехать с утра. Первые рейсы от Геологической: "
+				nextDayIsWorkDay := now.Weekday() != time.Friday && now.Weekday() != time.Saturday
+				if nextDayIsWorkDay {
+					currentRoute = theSchedule.workDayRouteToOffice
+				} else {
+					currentRoute = theSchedule.holidayRouteToOffice
+				}
+				for index, trip := range currentRoute {
+					if trip.hour >= 12 || index >= len(currentRoute)-1 {
+						reply += fmt.Sprintf("%s.", trip)
+						break
+					}
+					reply += fmt.Sprintf("%s, ", trip)
+				}
 			}
 			bot.SendMessage(message.Chat, reply, defaultMessageOptions)
 			continue
@@ -159,7 +172,7 @@ func main() {
 					reply += " Это последний на сегодня рейс, дальше - только на такси. " + monetizationMessage
 				}
 			} else {
-				reply = "Сегодня уехать домой уже не получится :( Придется остаться на ночь или ехать на такси. " + monetizationMessage
+				reply = "Сейчас уехать домой на трансфере уже не получится :( Придется остаться на ночь или ехать на такси. " + monetizationMessage
 			}
 			bot.SendMessage(message.Chat, reply, defaultMessageOptions)
 			continue
