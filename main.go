@@ -65,8 +65,7 @@ func buildRoute(departures []string) route {
 	return result
 }
 
-func buildSchedule() schedule {
-	data, _ := ioutil.ReadFile("schedule.yml")
+func buildSchedule(data []byte) schedule {
 	scheduleYaml := ScheduleYaml{}
 	err := yaml.Unmarshal([]byte(data), &scheduleYaml)
 	if err != nil {
@@ -102,7 +101,11 @@ func main() {
 	logging.SetFormatter(logging.MustStringFormatter("%{time:2006-01-02 15:04:05}\t%{level}\t%{message}"))
 	logging.SetBackend(logBackend)
 
-	theSchedule := buildSchedule()
+	yamlData, err := ioutil.ReadFile("schedule.yml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	theSchedule := buildSchedule(yamlData)
 
 	bot, err := telebot.NewBot(os.Getenv("KONTUR_TRANSFER_BOT_TOKEN"))
 	if err != nil {
