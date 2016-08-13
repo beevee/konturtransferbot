@@ -22,19 +22,33 @@ type schedule struct {
 	holidayRouteFromOffice route
 }
 
-func buildSchedule(data []byte) schedule {
+func buildSchedule(data []byte) (*schedule, error) {
 	scheduleYaml := ScheduleYaml{}
-	err := yaml.Unmarshal([]byte(data), &scheduleYaml)
+	if err := yaml.Unmarshal([]byte(data), &scheduleYaml); err != nil {
+		return nil, err
+	}
+	workDayRouteToOffice, err := buildRoute(scheduleYaml.WorkDayRouteToOffice)
 	if err != nil {
-		//log.Fatal(err)
+		return nil, err
 	}
-	result := schedule{
-		workDayRouteToOffice:   buildRoute(scheduleYaml.WorkDayRouteToOffice),
-		workDayRouteFromOffice: buildRoute(scheduleYaml.WorkDayRouteFromOffice),
-		holidayRouteToOffice:   buildRoute(scheduleYaml.HolidayRouteToOffice),
-		holidayRouteFromOffice: buildRoute(scheduleYaml.HolidayRouteFromOffice),
+	workDayRouteFromOffice, err := buildRoute(scheduleYaml.WorkDayRouteFromOffice)
+	if err != nil {
+		return nil, err
 	}
-	return result
+	holidayRouteToOffice, err := buildRoute(scheduleYaml.HolidayRouteToOffice)
+	if err != nil {
+		return nil, err
+	}
+	holidayRouteFromOffice, err := buildRoute(scheduleYaml.HolidayRouteFromOffice)
+	if err != nil {
+		return nil, err
+	}
+	return &schedule{
+		workDayRouteToOffice:   workDayRouteToOffice,
+		workDayRouteFromOffice: workDayRouteFromOffice,
+		holidayRouteToOffice:   holidayRouteToOffice,
+		holidayRouteFromOffice: holidayRouteFromOffice,
+	}, nil
 }
 
 func (s schedule) findCorrectRoute(now time.Time, toOffice bool) route {

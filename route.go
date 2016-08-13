@@ -7,16 +7,16 @@ import (
 
 type route []time.Time
 
-func buildRoute(departures []string) route {
+func buildRoute(departures []string) (route, error) {
 	result := make([]time.Time, len(departures))
 	for index, departure := range departures {
 		var err error
 		result[index], err = time.Parse("15:04", departure)
 		if err != nil {
-			log.Critical(err)
+			return nil, err
 		}
 	}
-	return result
+	return result, nil
 }
 
 func (r route) String() string {

@@ -26,7 +26,8 @@ func TestRoute(t *testing.T) {
 			"12:55",
 		}
 		Convey("It should parse correctly", func() {
-			r := buildRoute(rString)
+			r, err := buildRoute(rString)
+			So(err, ShouldBeNil)
 
 			Convey("Its numerical representation should be correct and in the same order", func() {
 				So(r[0].Hour(), ShouldEqual, 7)

@@ -24,7 +24,9 @@ WorkDayRouteFromOffice:
 HolidayRouteFromOffice:
   - "18:00"`
 		Convey("It should parse into a schedule structure", func() {
-			s := buildSchedule([]byte(sYaml))
+			s, err := buildSchedule([]byte(sYaml))
+			So(err, ShouldBeNil)
+
 			Convey("Its entries should be correct and in the same order", func() {
 				So(s.workDayRouteToOffice[0].Format("15:04"), ShouldEqual, "07:30")
 				So(s.workDayRouteToOffice[1].Format("15:04"), ShouldEqual, "08:00")

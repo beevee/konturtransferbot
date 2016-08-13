@@ -30,7 +30,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	theSchedule := buildSchedule(yamlData)
+	theSchedule, err := buildSchedule(yamlData)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	bot, err := telebot.NewBot(os.Getenv("KONTUR_TRANSFER_BOT_TOKEN"))
 	if err != nil {
