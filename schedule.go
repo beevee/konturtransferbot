@@ -7,6 +7,8 @@ import (
 	"gopkg.in/yaml.v1"
 )
 
+const monetizationMessage = "Монетизация! Промокод Gett на первую поездку - GTFUNKP, Яндекс.Такси - daf3qsau, Uber - ykt6m, Wheely - MHPRL."
+
 // ScheduleYaml - модель расписания для конфига
 type ScheduleYaml struct {
 	WorkDayRouteToOffice   []string `yaml:"WorkDayRouteToOffice"`
@@ -63,6 +65,51 @@ func (s schedule) findCorrectRoute(now time.Time, toOffice bool) route {
 		return s.workDayRouteToOffice
 	}
 	return s.workDayRouteFromOffice
+}
+
+func (s schedule) getBestTripToOfficeText(now time.Time) string {
+	var reply string
+
+	bestTrip, nextBestTrip := s.findCorrectRoute(now, true).findBestTripMatches(now)
+	if bestTrip != nil {
+		reply = fmt.Sprintf("Ближайший дежурный рейс от Геологической будет в %s.", bestTrip.Format("15:04"))
+		if nextBestTrip != nil {
+			reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip.Format("15:04"))
+		} else {
+			reply += " Это последний на сегодня рейс."
+		}
+	} else {
+		reply = "В ближайшие несколько часов уехать на работу на трансфере не получится. Лучше лечь поспать и поехать с утра. Первые рейсы от Геологической: "
+		nextDay := now.Add(24 * time.Hour)
+		currentRoute := s.findCorrectRoute(nextDay, true)
+		for index, trip := range currentRoute {
+			if trip.Hour() >= 12 || index >= len(currentRoute)-1 {
+				reply += fmt.Sprintf("%s.", trip.Format("15:04"))
+				break
+			}
+			reply += fmt.Sprintf("%s, ", trip.Format("15:04"))
+		}
+	}
+
+	return reply
+}
+
+func (s schedule) getBestTripFromOfficeText(now time.Time) string {
+	var reply string
+
+	bestTrip, nextBestTrip := s.findCorrectRoute(now, false).findBestTripMatches(now)
+	if bestTrip != nil {
+		reply = fmt.Sprintf("Ближайший дежурный рейс от офиса будет в %s.", bestTrip.Format("15:04"))
+		if nextBestTrip != nil {
+			reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip.Format("15:04"))
+		} else {
+			reply += " Это последний на сегодня рейс, дальше - только на такси. " + monetizationMessage
+		}
+	} else {
+		reply = "В ближайшие несколько часов уехать домой на трансфере не получится :( Придется остаться в офисе или ехать на такси. " + monetizationMessage
+	}
+
+	return reply
 }
 
 func (s schedule) getFullToOfficeTexts() []string {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
@@ -40,6 +39,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	ekbTimezone, _ := time.LoadLocation("Asia/Yekaterinburg")
 	var defaultMessageOptions = &telebot.SendOptions{
 		ReplyMarkup: telebot.ReplyMarkup{
 			CustomKeyboard: [][]string{
@@ -49,7 +49,6 @@ func main() {
 			ResizeKeyboard: true,
 		},
 	}
-	var monetizationMessage = "Монетизация! Промокод Gett на первую поездку - GTFUNKP, Яндекс.Такси - daf3qsau, Uber - ykt6m, Wheely - MHPRL."
 
 	messages := make(chan telebot.Message)
 	bot.Listen(messages, 1*time.Second)
@@ -57,48 +56,15 @@ func main() {
 	for message := range messages {
 		log.Infof("%s %s (username %s, chat id %d) said %s", message.Sender.FirstName, message.Sender.LastName, message.Sender.Username, message.Chat.ID, message.Text)
 
-		var reply string
-		var currentRoute route
-
-		ekbTimezone, _ := time.LoadLocation("Asia/Yekaterinburg")
 		now := time.Now().In(ekbTimezone)
 
 		switch message.Text {
 		case buttonToOfficeLabel:
-			bestTrip, nextBestTrip := theSchedule.findCorrectRoute(now, true).findBestTripMatches(now)
-			if bestTrip != nil {
-				reply = fmt.Sprintf("Ближайший дежурный рейс от Геологической будет в %s.", bestTrip.Format("15:04"))
-				if nextBestTrip != nil {
-					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip.Format("15:04"))
-				}
-			} else {
-				reply = "В ближайшие несколько часов уехать на работу на трансфере не получится. Лучше лечь поспать и поехать с утра. Первые рейсы от Геологической: "
-				nextDay := now.Add(24 * time.Hour)
-				currentRoute = theSchedule.findCorrectRoute(nextDay, true)
-				for index, trip := range currentRoute {
-					if trip.Hour() >= 12 || index >= len(currentRoute)-1 {
-						reply += fmt.Sprintf("%s.", trip.Format("15:04"))
-						break
-					}
-					reply += fmt.Sprintf("%s, ", trip.Format("15:04"))
-				}
-			}
-			bot.SendMessage(message.Chat, reply, defaultMessageOptions)
+			bot.SendMessage(message.Chat, theSchedule.getBestTripToOfficeText(now), defaultMessageOptions)
 			continue
 
 		case buttonFromOfficeLabel:
-			bestTrip, nextBestTrip := theSchedule.findCorrectRoute(now, false).findBestTripMatches(now)
-			if bestTrip != nil {
-				reply = fmt.Sprintf("Ближайший дежурный рейс от офиса будет в %s.", bestTrip.Format("15:04"))
-				if nextBestTrip != nil {
-					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip.Format("15:04"))
-				} else {
-					reply += " Это последний на сегодня рейс, дальше - только на такси. " + monetizationMessage
-				}
-			} else {
-				reply = "В ближайшие несколько часов уехать домой на трансфере не получится :( Придется остаться в офисе или ехать на такси. " + monetizationMessage
-			}
-			bot.SendMessage(message.Chat, reply, defaultMessageOptions)
+			bot.SendMessage(message.Chat, theSchedule.getBestTripFromOfficeText(now), defaultMessageOptions)
 			continue
 
 		case buttonScheduleToOfficeLabel:
