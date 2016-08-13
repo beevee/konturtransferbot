@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"sort"
 	"time"
 
 	"github.com/op/go-logging"
 	"github.com/tucnak/telebot"
-	"gopkg.in/yaml.v2"
 )
 
 var log *logging.Logger
@@ -20,89 +18,6 @@ const (
 	buttonScheduleToOfficeLabel   = "Все рейсы на работу"
 	buttonScheduleFromOfficeLabel = "Все рейсы домой"
 )
-
-type route []time.Time
-
-func (r route) String() string {
-	var result string
-	for _, departure := range r {
-		result += departure.Format("15:04\n")
-	}
-	return result
-}
-
-func buildRoute(departures []string) route {
-	result := make([]time.Time, len(departures))
-	for index, departure := range departures {
-		var err error
-		result[index], err = time.Parse("15:04", departure)
-		if err != nil {
-			log.Critical(err)
-		}
-	}
-	return result
-}
-
-type schedule struct {
-	workDayRouteToOffice   route
-	workDayRouteFromOffice route
-	holidayRouteToOffice   route
-	holidayRouteFromOffice route
-}
-
-func (s schedule) findCorrectRoute(now time.Time, toOffice bool) route {
-	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		if toOffice {
-			return s.holidayRouteToOffice
-		}
-		return s.holidayRouteFromOffice
-	}
-
-	if toOffice {
-		return s.workDayRouteToOffice
-	}
-	return s.workDayRouteFromOffice
-}
-
-// ScheduleYaml - модель расписания для конфига
-type ScheduleYaml struct {
-	WorkDayRouteToOffice   []string `yaml:"WorkDayRouteToOffice"`
-	WorkDayRouteFromOffice []string `yaml:"WorkDayRouteFromOffice"`
-	HolidayRouteToOffice   []string `yaml:"HolidayRouteToOffice"`
-	HolidayRouteFromOffice []string `yaml:"HolidayRouteFromOffice"`
-}
-
-func buildSchedule(data []byte) schedule {
-	scheduleYaml := ScheduleYaml{}
-	err := yaml.Unmarshal([]byte(data), &scheduleYaml)
-	if err != nil {
-		log.Fatal(err)
-	}
-	result := schedule{
-		workDayRouteToOffice:   buildRoute(scheduleYaml.WorkDayRouteToOffice),
-		workDayRouteFromOffice: buildRoute(scheduleYaml.WorkDayRouteFromOffice),
-		holidayRouteToOffice:   buildRoute(scheduleYaml.HolidayRouteToOffice),
-		holidayRouteFromOffice: buildRoute(scheduleYaml.HolidayRouteFromOffice),
-	}
-	return result
-}
-
-func findBestTripMatches(now time.Time, r route) (*time.Time, *time.Time) {
-	bestDepartureMatch := sort.Search(len(r), func(i int) bool {
-		return r[i].Hour() > now.Hour() || r[i].Hour() == now.Hour() && r[i].Minute() >= now.Minute()
-	})
-	var bestTrip, nextBestTrip *time.Time
-	if bestDepartureMatch < len(r) {
-		bestTrip = &r[bestDepartureMatch]
-		if bestDepartureMatch < len(r)-1 {
-			nextBestTrip = &r[bestDepartureMatch+1]
-		}
-	}
-	if bestTrip.Hour()-now.Hour() >= 5 {
-		return nil, nil
-	}
-	return bestTrip, nextBestTrip
-}
 
 func main() {
 	log = logging.MustGetLogger("kontur_transfer_bot")
@@ -147,8 +62,7 @@ func main() {
 
 		switch message.Text {
 		case buttonToOfficeLabel:
-			currentRoute = theSchedule.findCorrectRoute(now, true)
-			bestTrip, nextBestTrip := findBestTripMatches(now, currentRoute)
+			bestTrip, nextBestTrip := theSchedule.findCorrectRoute(now, true).findBestTripMatches(now)
 			if bestTrip != nil {
 				reply = fmt.Sprintf("Ближайший дежурный рейс от Геологической будет в %s.", bestTrip.Format("15:04"))
 				if nextBestTrip != nil {
@@ -170,8 +84,7 @@ func main() {
 			continue
 
 		case buttonFromOfficeLabel:
-			currentRoute = theSchedule.findCorrectRoute(now, false)
-			bestTrip, nextBestTrip := findBestTripMatches(now, currentRoute)
+			bestTrip, nextBestTrip := theSchedule.findCorrectRoute(now, false).findBestTripMatches(now)
 			if bestTrip != nil {
 				reply = fmt.Sprintf("Ближайший дежурный рейс от офиса будет в %s.", bestTrip.Format("15:04"))
 				if nextBestTrip != nil {
