@@ -21,31 +21,24 @@ const (
 	buttonScheduleFromOfficeLabel = "Все рейсы домой"
 )
 
-type timeWithoutDate struct {
-	hour   int
-	minute int
-}
-
-func (twd timeWithoutDate) String() string {
-	return fmt.Sprintf("%02d:%02d", twd.hour, twd.minute)
-}
-
-type route []timeWithoutDate
+type route []time.Time
 
 func (r route) String() string {
 	var result string
 	for _, departure := range r {
-		result += fmt.Sprintf("%s\n", departure)
+		result += departure.Format("15:04\n")
 	}
 	return result
 }
 
 func buildRoute(departures []string) route {
-	result := make([]timeWithoutDate, len(departures))
+	result := make([]time.Time, len(departures))
 	for index, departure := range departures {
-		twd := timeWithoutDate{}
-		fmt.Sscanf(departure, "%d:%d", &twd.hour, &twd.minute)
-		result[index] = twd
+		var err error
+		result[index], err = time.Parse("15:04", departure)
+		if err != nil {
+			log.Critical(err)
+		}
 	}
 	return result
 }
@@ -94,18 +87,18 @@ func buildSchedule(data []byte) schedule {
 	return result
 }
 
-func findBestTripMatches(now time.Time, r route) (*timeWithoutDate, *timeWithoutDate) {
+func findBestTripMatches(now time.Time, r route) (*time.Time, *time.Time) {
 	bestDepartureMatch := sort.Search(len(r), func(i int) bool {
-		return r[i].hour > now.Hour() || r[i].hour == now.Hour() && r[i].minute >= now.Minute()
+		return r[i].Hour() > now.Hour() || r[i].Hour() == now.Hour() && r[i].Minute() >= now.Minute()
 	})
-	var bestTrip, nextBestTrip *timeWithoutDate
+	var bestTrip, nextBestTrip *time.Time
 	if bestDepartureMatch < len(r) {
 		bestTrip = &r[bestDepartureMatch]
 		if bestDepartureMatch < len(r)-1 {
 			nextBestTrip = &r[bestDepartureMatch+1]
 		}
 	}
-	if bestTrip.hour-now.Hour() >= 5 {
+	if bestTrip.Hour()-now.Hour() >= 5 {
 		return nil, nil
 	}
 	return bestTrip, nextBestTrip
@@ -157,20 +150,20 @@ func main() {
 			currentRoute = theSchedule.findCorrectRoute(now, true)
 			bestTrip, nextBestTrip := findBestTripMatches(now, currentRoute)
 			if bestTrip != nil {
-				reply = fmt.Sprintf("Ближайший дежурный рейс от Геологической будет в %s.", bestTrip)
+				reply = fmt.Sprintf("Ближайший дежурный рейс от Геологической будет в %s.", bestTrip.Format("15:04"))
 				if nextBestTrip != nil {
-					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip)
+					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip.Format("15:04"))
 				}
 			} else {
 				reply = "В ближайшие несколько часов уехать на работу на трансфере не получится. Лучше лечь поспать и поехать с утра. Первые рейсы от Геологической: "
 				nextDay := now.Add(24 * time.Hour)
 				currentRoute = theSchedule.findCorrectRoute(nextDay, true)
 				for index, trip := range currentRoute {
-					if trip.hour >= 12 || index >= len(currentRoute)-1 {
-						reply += fmt.Sprintf("%s.", trip)
+					if trip.Hour() >= 12 || index >= len(currentRoute)-1 {
+						reply += fmt.Sprintf("%s.", trip.Format("15:04"))
 						break
 					}
-					reply += fmt.Sprintf("%s, ", trip)
+					reply += fmt.Sprintf("%s, ", trip.Format("15:04"))
 				}
 			}
 			bot.SendMessage(message.Chat, reply, defaultMessageOptions)
@@ -180,9 +173,9 @@ func main() {
 			currentRoute = theSchedule.findCorrectRoute(now, false)
 			bestTrip, nextBestTrip := findBestTripMatches(now, currentRoute)
 			if bestTrip != nil {
-				reply = fmt.Sprintf("Ближайший дежурный рейс от офиса будет в %s.", bestTrip)
+				reply = fmt.Sprintf("Ближайший дежурный рейс от офиса будет в %s.", bestTrip.Format("15:04"))
 				if nextBestTrip != nil {
-					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip)
+					reply += fmt.Sprintf(" Следующий - в %s.", nextBestTrip.Format("15:04"))
 				} else {
 					reply += " Это последний на сегодня рейс, дальше - только на такси. " + monetizationMessage
 				}
