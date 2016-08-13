@@ -37,6 +37,13 @@ func TestRoute(t *testing.T) {
 				So(r[2].Minute(), ShouldEqual, 55)
 			})
 
+			Convey("It should correctly find no best trips", func() {
+				now, _ := time.Parse("15:04", "17:00")
+				bestTrip, nextBestTrip := r.findBestTripMatches(now)
+				So(bestTrip, ShouldBeNil)
+				So(nextBestTrip, ShouldBeNil)
+			})
+
 			Convey("It should correctly find two best trips", func() {
 				now, _ := time.Parse("15:04", "07:00")
 				bestTrip, nextBestTrip := r.findBestTripMatches(now)

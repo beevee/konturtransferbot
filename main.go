@@ -99,13 +99,15 @@ func main() {
 			continue
 
 		case buttonScheduleToOfficeLabel:
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы от Геологической в будни:\n%s", theSchedule.workDayRouteToOffice), defaultMessageOptions)
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы от Геологической в выходные:\n%s", theSchedule.holidayRouteToOffice), defaultMessageOptions)
+			for _, text := range theSchedule.getFullToOfficeTexts() {
+				bot.SendMessage(message.Chat, text, defaultMessageOptions)
+			}
 			continue
 
 		case buttonScheduleFromOfficeLabel:
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы от офиса в будни:\n%s", theSchedule.workDayRouteFromOffice), defaultMessageOptions)
-			bot.SendMessage(message.Chat, fmt.Sprintf("Дежурные рейсы от офиса в выходные:\n%s", theSchedule.holidayRouteFromOffice), defaultMessageOptions)
+			for _, text := range theSchedule.getFullFromOfficeTexts() {
+				bot.SendMessage(message.Chat, text, defaultMessageOptions)
+			}
 			continue
 		}
 		bot.SendMessage(message.Chat, "Привет! Я могу подсказать расписание трансфера по дежурному маршруту.", defaultMessageOptions)

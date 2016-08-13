@@ -52,6 +52,18 @@ HolidayRouteFromOffice:
 				So(s.findCorrectRoute(now, true).String(), ShouldEqual, s.holidayRouteToOffice.String())
 				So(s.findCorrectRoute(now, false).String(), ShouldEqual, s.holidayRouteFromOffice.String())
 			})
+
+			Convey("It should correctly return whole schedule to office", func() {
+				texts := s.getFullToOfficeTexts()
+				So(texts[0], ShouldEqual, "Дежурные рейсы от Геологической в будни:\n07:30\n08:00\n20:00\n20:30\n")
+				So(texts[1], ShouldEqual, "Дежурные рейсы от Геологической в выходные:\n10:30\n")
+			})
+
+			Convey("It should correctly return whole schedule from office", func() {
+				texts := s.getFullFromOfficeTexts()
+				So(texts[0], ShouldEqual, "Дежурные рейсы от офиса в будни:\n08:20\n08:50\n20:20\n20:50\n")
+				So(texts[1], ShouldEqual, "Дежурные рейсы от офиса в выходные:\n18:00\n")
+			})
 		})
 	})
 }
