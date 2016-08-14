@@ -1,4 +1,5 @@
 language: go
+sudo: false
 
 addons:
   ssh_known_hosts: beevee.ru
@@ -6,12 +7,15 @@ addons:
 go:
 - 1.6
 
-script:
-- go test
-- go build
-
 before_install:
-- openssl aes-256-cbc -K $encrypted_e2fb846dc94b_key -iv $encrypted_e2fb846dc94b_iv -in deploy_rsa.enc -out deploy_rsa -d
+- openssl aes-256-cbc -K $encrypted_e2fb846dc94b_key -iv $encrypted_e2fb846dc94b_iv
+  -in deploy_rsa.enc -out deploy_rsa -d
+- go get github.com/mattn/goveralls
+- go get golang.org/x/tools/cmd/cover
+
+script:
+- "$HOME/gopath/bin/goveralls -service=travis-ci"
+- go build
 
 before_deploy:
 - eval "$(ssh-agent -s)"
@@ -36,3 +40,7 @@ deploy:
   - ssh deploy@beevee.ru 'sudo systemctl restart kontur_transfer_bot'
   on:
     branch: master
+
+env:
+  global:
+    secure: OGv+LRi6bxgSWD0ojySHph2HUqkBF5g6qlLereAy/GfBevu1/SDU+L8YrNWCWM0YMGFNsIVsVAwHcIJggx1Rt0+zT3gzxIl7SBJ97jZdujE0Xu7kMTqXsg+Aijk+5XcCpk0nu4u2+E/KJlC+vLtr4+lLmW21zB67JNoZKU89msoI6NCAY+GGyhKkv4CqPpBfdA+ZCXvzHvHBqVVVGQ+hHhDBQ6iZJYFMT1tgxNYjAvv12BGTd/1p9C0UOLZ0CGXpMUo735gqNrQRnQfJSDqjbUwA7sNySqXhzsiqyA+AQujzeDkXR1WmgL+h8nQahxi6khLknMzKoanP6hkJs1xqcqXoOVpRD18iZ4ON6jEg0aOPkRZQjYyVVLPu2O9fOGKl8uiN8VYA2yjz7l2cRl+JSzdp/sy0LC7Bcu+hJT7Rx5TnNnINF2toElY/mvR7oGXRT8RlgygKbsNm5Okys7rTrCsvUzo0CWo07R1g688m6gCFYrqYORvHR98kJVlzcz7C7021yGeN0YmqVahFoIi7O/S7Br3p/YlcttyPcRWGUrTdYr30f8vzolQ4zzVvb/0oPv7v0W4j90Yb0yCcZx0NuivMXwTdHPVrj2QHcVrzgCGZFJI9z5BL/qGxBvLjIg4zd5O38Dqu1mfjjk/q3LEo8xrS5+HUWwzCdpf85Glr3iQ=
