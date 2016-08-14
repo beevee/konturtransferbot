@@ -108,4 +108,73 @@ HolidayRouteFromOffice:
 			})
 		})
 	})
+
+	Convey("Given totally invalid YAML schedule", t, func() {
+		sYaml := `	1123123`
+		Convey("It should not parse", func() {
+			_, err := buildSchedule([]byte(sYaml))
+			So(err, ShouldNotBeNil)
+		})
+	})
+
+	Convey("Given YAML schedule with incorrect WorkDayRouteToOffice", t, func() {
+		sYaml := `WorkDayRouteToOffice:
+  - "07:30?!"
+HolidayRouteToOffice:
+  - "10:30"
+WorkDayRouteFromOffice:
+  - "08:20"
+HolidayRouteFromOffice:
+  - "18:00"`
+		Convey("It should not parse", func() {
+			_, err := buildSchedule([]byte(sYaml))
+			So(err, ShouldNotBeNil)
+		})
+	})
+
+	Convey("Given YAML schedule with incorrect HolidayRouteToOffice", t, func() {
+		sYaml := `WorkDayRouteToOffice:
+  - "07:30"
+HolidayRouteToOffice:
+  - "--10:30"
+WorkDayRouteFromOffice:
+  - "08:20"
+HolidayRouteFromOffice:
+  - "18:00"`
+		Convey("It should not parse", func() {
+			_, err := buildSchedule([]byte(sYaml))
+			So(err, ShouldNotBeNil)
+		})
+	})
+
+	Convey("Given YAML schedule with incorrect WorkDayRouteFromOffice", t, func() {
+		sYaml := `WorkDayRouteToOffice:
+  - "07:30"
+HolidayRouteToOffice:
+  - "10:30"
+WorkDayRouteFromOffice:
+  - "AAAAAAA"
+HolidayRouteFromOffice:
+  - "18:00"`
+		Convey("It should not parse", func() {
+			_, err := buildSchedule([]byte(sYaml))
+			So(err, ShouldNotBeNil)
+		})
+	})
+
+	Convey("Given YAML schedule with incorrect HolidayRouteFromOffice", t, func() {
+		sYaml := `WorkDayRouteToOffice:
+  - "07:30"
+HolidayRouteToOffice:
+  - "10:30"
+WorkDayRouteFromOffice:
+  - "08:20"
+HolidayRouteFromOffice:
+  - "NNNNNOOOOOOOOOOO!"`
+		Convey("It should not parse", func() {
+			_, err := buildSchedule([]byte(sYaml))
+			So(err, ShouldNotBeNil)
+		})
+	})
+
 }

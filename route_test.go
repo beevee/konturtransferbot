@@ -68,4 +68,16 @@ func TestRoute(t *testing.T) {
 
 		})
 	})
+
+	Convey("Given incorrect string representation of a route", t, func() {
+		rString := []string{
+			"7:30",
+			"11:-sdf00",
+			"12:55",
+		}
+		Convey("It should not parse", func() {
+			_, err := buildRoute(rString)
+			So(err, ShouldNotBeNil)
+		})
+	})
 }
