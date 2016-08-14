@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.org/beevee/kontur_transfer_bot.svg?branch=master)](https://travis-ci.org/beevee/kontur_transfer_bot) [![Coverage Status](https://coveralls.io/repos/github/beevee/kontur_transfer_bot/badge.svg?branch=master)](https://coveralls.io/github/beevee/kontur_transfer_bot?branch=master)
