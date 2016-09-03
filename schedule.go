@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v1"
 )
 
-const monetizationMessage = "Промокод на первую бесплатную поездку: Gett - GTFUNKP, Яндекс.Такси - daf3qsau, Uber - ykt6m, Wheely - MHPRL. Скидка 50% на три поездки до конца августа в Uber - WB50RU."
+const monetizationMessage = "Промокод на первую бесплатную поездку: Gett - GTFUNKP, Яндекс.Такси - daf3qsau, Uber - ykt6m, Wheely - MHPRL."
 
 // ScheduleYaml - модель расписания для конфига
 type ScheduleYaml struct {
