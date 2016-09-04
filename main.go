@@ -1,4 +1,4 @@
-//+build !test
+// +build !test
 
 package main
 
