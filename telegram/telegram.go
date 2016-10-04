@@ -73,6 +73,8 @@ func (b *Bot) Stop() error {
 func (b *Bot) handleMessage(message telebot.Message) error {
 	now := time.Now().In(b.Timezone)
 
+	b.Logger.Log("msg", "message received", "firstname", message.Sender.FirstName, "lastname", message.Sender.LastName, "username", message.Sender.Username, "chatid", message.Chat.ID, "text", message.Text)
+
 	switch message.Text {
 	case buttonToOfficeLabel:
 		return b.telebot.SendMessage(message.Chat, b.Schedule.GetBestTripToOfficeText(now), b.defaultMessageOptions)
