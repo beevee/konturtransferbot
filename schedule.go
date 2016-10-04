@@ -1,73 +1,36 @@
-package main
+package konturtransferbot
 
 import (
 	"fmt"
 	"time"
-
-	"gopkg.in/yaml.v1"
 )
 
 const monetizationMessage = "Скидка 100₽ на 10 поездок до 5 октября в Яндекс.Такси — EKB100. Промокод на первую бесплатную поездку: Gett — GTFUNKP, Яндекс.Такси — daf3qsau, Uber — ykt6m, Wheely — MHPRL."
 
-// ScheduleYaml - модель расписания для конфига
-type ScheduleYaml struct {
-	WorkDayRouteToOffice   []string `yaml:"WorkDayRouteToOffice"`
-	WorkDayRouteFromOffice []string `yaml:"WorkDayRouteFromOffice"`
-	HolidayRouteToOffice   []string `yaml:"HolidayRouteToOffice"`
-	HolidayRouteFromOffice []string `yaml:"HolidayRouteFromOffice"`
+// Schedule contains all information on transfer departure times
+type Schedule struct {
+	WorkDayRouteToOffice   Route
+	WorkDayRouteFromOffice Route
+	HolidayRouteToOffice   Route
+	HolidayRouteFromOffice Route
 }
 
-type schedule struct {
-	workDayRouteToOffice   route
-	workDayRouteFromOffice route
-	holidayRouteToOffice   route
-	holidayRouteFromOffice route
-}
-
-func buildSchedule(data []byte) (*schedule, error) {
-	scheduleYaml := ScheduleYaml{}
-	if err := yaml.Unmarshal([]byte(data), &scheduleYaml); err != nil {
-		return nil, err
-	}
-	workDayRouteToOffice, err := buildRoute(scheduleYaml.WorkDayRouteToOffice)
-	if err != nil {
-		return nil, err
-	}
-	workDayRouteFromOffice, err := buildRoute(scheduleYaml.WorkDayRouteFromOffice)
-	if err != nil {
-		return nil, err
-	}
-	holidayRouteToOffice, err := buildRoute(scheduleYaml.HolidayRouteToOffice)
-	if err != nil {
-		return nil, err
-	}
-	holidayRouteFromOffice, err := buildRoute(scheduleYaml.HolidayRouteFromOffice)
-	if err != nil {
-		return nil, err
-	}
-	return &schedule{
-		workDayRouteToOffice:   workDayRouteToOffice,
-		workDayRouteFromOffice: workDayRouteFromOffice,
-		holidayRouteToOffice:   holidayRouteToOffice,
-		holidayRouteFromOffice: holidayRouteFromOffice,
-	}, nil
-}
-
-func (s schedule) findCorrectRoute(now time.Time, toOffice bool) route {
+func (s Schedule) findCorrectRoute(now time.Time, toOffice bool) Route {
 	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 		if toOffice {
-			return s.holidayRouteToOffice
+			return s.HolidayRouteToOffice
 		}
-		return s.holidayRouteFromOffice
+		return s.HolidayRouteFromOffice
 	}
 
 	if toOffice {
-		return s.workDayRouteToOffice
+		return s.WorkDayRouteToOffice
 	}
-	return s.workDayRouteFromOffice
+	return s.WorkDayRouteFromOffice
 }
 
-func (s schedule) getBestTripToOfficeText(now time.Time) string {
+// GetBestTripToOfficeText returns text recommendation for two (or maybe less) closest departures to office
+func (s Schedule) GetBestTripToOfficeText(now time.Time) string {
 	var reply string
 
 	bestTrip, nextBestTrip := s.findCorrectRoute(now, true).findBestTripMatches(now)
@@ -94,7 +57,8 @@ func (s schedule) getBestTripToOfficeText(now time.Time) string {
 	return reply
 }
 
-func (s schedule) getBestTripFromOfficeText(now time.Time) string {
+// GetBestTripFromOfficeText returns text recommendation for two (or maybe less) closest departures from office
+func (s Schedule) GetBestTripFromOfficeText(now time.Time) string {
 	var reply string
 
 	bestTrip, nextBestTrip := s.findCorrectRoute(now, false).findBestTripMatches(now)
@@ -112,16 +76,18 @@ func (s schedule) getBestTripFromOfficeText(now time.Time) string {
 	return reply
 }
 
-func (s schedule) getFullToOfficeTexts() []string {
+// GetFullToOfficeTexts returns text representation of full schedule to office
+func (s Schedule) GetFullToOfficeTexts() []string {
 	return []string{
-		fmt.Sprintf("Дежурные рейсы от Геологической в будни:\n%s", s.workDayRouteToOffice),
-		fmt.Sprintf("Дежурные рейсы от Геологической в выходные:\n%s", s.holidayRouteToOffice),
+		fmt.Sprintf("Дежурные рейсы от Геологической в будни:\n%s", s.WorkDayRouteToOffice),
+		fmt.Sprintf("Дежурные рейсы от Геологической в выходные:\n%s", s.HolidayRouteToOffice),
 	}
 }
 
-func (s schedule) getFullFromOfficeTexts() []string {
+// GetFullFromOfficeTexts returns text representation of full schedule from office
+func (s Schedule) GetFullFromOfficeTexts() []string {
 	return []string{
-		fmt.Sprintf("Дежурные рейсы от офиса в будни:\n%s", s.workDayRouteFromOffice),
-		fmt.Sprintf("Дежурные рейсы от офиса в выходные:\n%s", s.holidayRouteFromOffice),
+		fmt.Sprintf("Дежурные рейсы от офиса в будни:\n%s", s.WorkDayRouteFromOffice),
+		fmt.Sprintf("Дежурные рейсы от офиса в выходные:\n%s", s.HolidayRouteFromOffice),
 	}
 }

@@ -1,18 +1,19 @@
-package main
+package konturtransferbot
 
 import (
 	"testing"
 	"time"
 
+	"github.com/ghodss/yaml"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestRoute(t *testing.T) {
 	Convey("Given route with several departures", t, func() {
-		r := route{
-			time.Date(0, 0, 0, 10, 30, 0, 0, &time.Location{}),
-			time.Date(0, 0, 0, 11, 0, 0, 0, &time.Location{}),
-			time.Date(0, 0, 0, 12, 30, 0, 0, &time.Location{}),
+		r := Route{
+			Departure{time.Date(0, 0, 0, 10, 30, 0, 0, &time.Location{})},
+			Departure{time.Date(0, 0, 0, 11, 0, 0, 0, &time.Location{})},
+			Departure{time.Date(0, 0, 0, 12, 30, 0, 0, &time.Location{})},
 		}
 		Convey("Its string representation should contain all of them", func() {
 			So(r.String(), ShouldEqual, "10:30\n11:00\n12:30\n")
@@ -20,13 +21,11 @@ func TestRoute(t *testing.T) {
 	})
 
 	Convey("Given string representation of a route", t, func() {
-		rString := []string{
-			"7:30",
-			"11:00",
-			"12:55",
-		}
+		rYaml := []byte("- 7:30\n- 11:00\n- 12:55")
+
 		Convey("It should parse correctly", func() {
-			r, err := buildRoute(rString)
+			r := Route{}
+			err := yaml.Unmarshal(rYaml, &r)
 			So(err, ShouldBeNil)
 
 			Convey("Its numerical representation should be correct and in the same order", func() {
@@ -70,13 +69,11 @@ func TestRoute(t *testing.T) {
 	})
 
 	Convey("Given incorrect string representation of a route", t, func() {
-		rString := []string{
-			"7:30",
-			"11:-sdf00",
-			"12:55",
-		}
+		rYaml := []byte("- NNNNNOOOOOOOOOOO\n- 11:00\n- 12:55")
+
 		Convey("It should not parse", func() {
-			_, err := buildRoute(rString)
+			r := Route{}
+			err := yaml.Unmarshal(rYaml, &r)
 			So(err, ShouldNotBeNil)
 		})
 	})

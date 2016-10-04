@@ -1,25 +1,29 @@
-package main
+package konturtransferbot
 
 import (
 	"sort"
 	"time"
 )
 
-type route []time.Time
+// Route is a sorted sequence of departure times
+type Route []Departure
 
-func buildRoute(departures []string) (route, error) {
-	result := make([]time.Time, len(departures))
-	for index, departure := range departures {
-		var err error
-		result[index], err = time.Parse("15:04", departure)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return result, nil
+// Departure is a single departure time
+type Departure struct {
+	time.Time
 }
 
-func (r route) String() string {
+// UnmarshalJSON is a custom unmarshaler function for time, which works for both JSON and YAML
+func (d *Departure) UnmarshalJSON(departure []byte) error {
+	var err error
+	d.Time, err = time.Parse("\"15:04\"", string(departure))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r Route) String() string {
 	var result string
 	for _, departure := range r {
 		result += departure.Format("15:04\n")
@@ -27,11 +31,11 @@ func (r route) String() string {
 	return result
 }
 
-func (r route) findBestTripMatches(now time.Time) (*time.Time, *time.Time) {
+func (r Route) findBestTripMatches(now time.Time) (*Departure, *Departure) {
 	bestDepartureMatch := sort.Search(len(r), func(i int) bool {
 		return r[i].Hour() > now.Hour() || r[i].Hour() == now.Hour() && r[i].Minute() >= now.Minute()
 	})
-	var bestTrip, nextBestTrip *time.Time
+	var bestTrip, nextBestTrip *Departure
 	if bestDepartureMatch < len(r) {
 		bestTrip = &r[bestDepartureMatch]
 		if bestTrip.Hour()-now.Hour() >= 5 {

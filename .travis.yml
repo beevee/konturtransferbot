@@ -12,11 +12,13 @@ before_install:
   -in deploy_rsa.enc -out deploy_rsa -d
 - go get github.com/mattn/goveralls
 - go get golang.org/x/tools/cmd/cover
+- go get github.com/kardianos/govendor
+- govendor sync
 
 script:
 - go test -covermode=count -coverprofile=profile.cov -tags test
 - "$HOME/gopath/bin/goveralls -coverprofile=profile.cov -service=travis-ci"
-- go build
+- cd cmd/konturtransferbot && go build
 
 before_deploy:
 - eval "$(ssh-agent -s)"
@@ -27,18 +29,18 @@ deploy:
 - provider: script
   skip_cleanup: true
   script:
-  - rsync --quiet $TRAVIS_BUILD_DIR/kontur_transfer_bot deploy@beevee.ru:/opt/kontur_transfer_bot/
+  - rsync --quiet $TRAVIS_BUILD_DIR/cmd/konturtransferbot/konturtransferbot deploy@beevee.ru:/opt/konturtransferbot/
   on:
     branch: master
 - provider: script
   skip_cleanup: true
   script:
-  - rsync --quiet $TRAVIS_BUILD_DIR/schedule.yml deploy@beevee.ru:/opt/kontur_transfer_bot/
+  - rsync --quiet $TRAVIS_BUILD_DIR/cmd/konturtransferbot/schedule.yml deploy@beevee.ru:/opt/konturtransferbot/
   on:
     branch: master
 - provider: script
   script:
-  - ssh deploy@beevee.ru 'sudo systemctl restart kontur_transfer_bot'
+  - ssh deploy@beevee.ru 'sudo systemctl restart konturtransferbot'
   on:
     branch: master
 

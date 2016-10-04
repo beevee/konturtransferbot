@@ -24,4 +24,5 @@ _testmain.go
 *.prof
 *.log
 
-kontur_transfer_bot
+/vendor/*/
+cmd/konturtransferbot/konturtransferbot
