@@ -11,13 +11,11 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_e2fb846dc94b_key -iv $encrypted_e2fb846dc94b_iv
   -in deploy_rsa.enc -out deploy_rsa -d
 - go get github.com/mattn/goveralls
-- go get golang.org/x/tools/cmd/cover
 - go get github.com/kardianos/govendor
 - govendor sync
 
 script:
-- go test -covermode=count -coverprofile=profile.cov -tags test
-- "$HOME/gopath/bin/goveralls -coverprofile=profile.cov -service=travis-ci"
+- goveralls
 - cd cmd/konturtransferbot && go build
 
 before_deploy:
