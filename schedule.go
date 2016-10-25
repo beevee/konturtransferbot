@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const monetizationMessage = "Скидка 40% на 10 поездок до 16 октября в Uber — 40EKB. Промокод на первую бесплатную поездку: Gett — GTFUNKP, Яндекс.Такси — daf3qsau, Uber — ykt6m, Wheely — MHPRL."
+const monetizationMessage = "Промокод на первую бесплатную поездку: Gett — GTFUNKP, Яндекс.Такси — daf3qsau, Uber — ykt6m, Wheely — MHPRL."
 
 // Schedule contains all information on transfer departure times
 type Schedule struct {
