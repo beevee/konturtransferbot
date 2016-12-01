@@ -49,9 +49,9 @@ WorkDayRouteFromOffice:
   - 22:15
   - 22:45
   - 23:30
+HolidayRouteFromOffice:
   - 00:00
   - 00:30
   - 01:00
   - 01:30
-HolidayRouteFromOffice:
   - 18:00
