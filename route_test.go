@@ -59,7 +59,7 @@ func TestRoute(t *testing.T) {
 			})
 
 			Convey("It should not offer trips more than (roughly) 5 hours in advance", func() {
-				now, _ := time.Parse("15:04", "02:25")
+				now, _ := time.Parse("15:04", "01:25")
 				bestTrip, nextBestTrip := r.findBestTripMatches(now)
 				So(bestTrip, ShouldBeNil)
 				So(nextBestTrip, ShouldBeNil)
