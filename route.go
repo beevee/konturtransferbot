@@ -38,9 +38,6 @@ func (r Route) findBestTripMatches(now time.Time) (*Departure, *Departure) {
 	var bestTrip, nextBestTrip *Departure
 	if bestDepartureMatch < len(r) {
 		bestTrip = &r[bestDepartureMatch]
-		if bestTrip.Hour()-now.Hour() >= 6 {
-			return nil, nil
-		}
 		if bestDepartureMatch < len(r)-1 {
 			nextBestTrip = &r[bestDepartureMatch+1]
 		}

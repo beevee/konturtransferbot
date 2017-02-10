@@ -73,11 +73,6 @@ HolidayRouteFromOffice:
 				So(s.GetBestTripFromOfficeText(now), ShouldEqual, "В ближайшие несколько часов уехать домой на трансфере не получится :( Придется остаться в офисе или ехать на такси. "+monetizationMessage)
 			})
 
-			Convey("It should recommend to take a cab when best available trip from office is very far away", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "13.08.2016 01:00")
-				So(s.GetBestTripFromOfficeText(now), ShouldEqual, "В ближайшие несколько часов уехать домой на трансфере не получится :( Придется остаться в офисе или ехать на такси. "+monetizationMessage)
-			})
-
 			Convey("It should recommend two best trips to office when possible", func() {
 				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 07:00")
 				So(s.GetBestTripToOfficeText(now), ShouldEqual, "Ближайший дежурный рейс от Геологической будет в 07:30. Следующий - в 08:00.")
@@ -91,11 +86,6 @@ HolidayRouteFromOffice:
 			Convey("It should recommend to get some sleep when no more trips to office are available, and recommend morning trips", func() {
 				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 23:00")
 				So(s.GetBestTripToOfficeText(now), ShouldEqual, "В ближайшие несколько часов уехать на работу на трансфере не получится. Лучше лечь поспать и поехать с утра. Первые рейсы от Геологической: 10:30.")
-			})
-
-			Convey("It should recommend to get some sleep when best available trip to office is very far away", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "10.08.2016 01:00")
-				So(s.GetBestTripToOfficeText(now), ShouldEqual, "В ближайшие несколько часов уехать на работу на трансфере не получится. Лучше лечь поспать и поехать с утра. Первые рейсы от Геологической: 07:30, 08:00, 20:00.")
 			})
 
 			Convey("It should correctly return whole schedule to office", func() {
