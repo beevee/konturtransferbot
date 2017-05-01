@@ -11,12 +11,33 @@ import (
 func TestRoute(t *testing.T) {
 	Convey("Given route with several departures", t, func() {
 		r := Route{
-			Departure{time.Date(0, 0, 0, 10, 30, 0, 0, &time.Location{})},
-			Departure{time.Date(0, 0, 0, 11, 0, 0, 0, &time.Location{})},
-			Departure{time.Date(0, 0, 0, 12, 30, 0, 0, &time.Location{})},
+			Departure{time.Date(0, 1, 1, 10, 30, 0, 0, &time.Location{})},
+			Departure{time.Date(0, 1, 1, 11, 0, 0, 0, &time.Location{})},
+			Departure{time.Date(0, 1, 1, 12, 30, 0, 0, &time.Location{})},
 		}
+
 		Convey("Its string representation should contain all of them", func() {
 			So(r.String(), ShouldEqual, "10:30\n11:00\n12:30\n")
+		})
+
+		Convey("Divider should be placed correctly inside a schedule", func() {
+			now := time.Date(0, 1, 1, 10, 45, 0, 0, &time.Location{})
+			So(r.StringWithDivider(now), ShouldEqual, "10:30\n———— сейчас 10:45 ————\n11:00\n12:30\n")
+		})
+
+		Convey("Divider calculation should not consider date, only time", func() {
+			now := time.Date(2017, 5, 1, 10, 45, 0, 0, &time.Location{})
+			So(r.StringWithDivider(now), ShouldEqual, "10:30\n———— сейчас 10:45 ————\n11:00\n12:30\n")
+		})
+
+		Convey("No divider should be placed before first departure", func() {
+			now := time.Date(0, 1, 1, 9, 45, 0, 0, &time.Location{})
+			So(r.StringWithDivider(now), ShouldEqual, "10:30\n11:00\n12:30\n")
+		})
+
+		Convey("No divider should be placed after last departure", func() {
+			now := time.Date(0, 1, 1, 19, 45, 0, 0, &time.Location{})
+			So(r.StringWithDivider(now), ShouldEqual, "10:30\n11:00\n12:30\n")
 		})
 	})
 
@@ -35,27 +56,6 @@ func TestRoute(t *testing.T) {
 				So(r[1].Minute(), ShouldEqual, 0)
 				So(r[2].Hour(), ShouldEqual, 12)
 				So(r[2].Minute(), ShouldEqual, 55)
-			})
-
-			Convey("It should correctly find no best trips", func() {
-				now, _ := time.Parse("15:04", "17:00")
-				bestTrip, nextBestTrip := r.findBestTripMatches(now)
-				So(bestTrip, ShouldBeNil)
-				So(nextBestTrip, ShouldBeNil)
-			})
-
-			Convey("It should correctly find two best trips", func() {
-				now, _ := time.Parse("15:04", "07:00")
-				bestTrip, nextBestTrip := r.findBestTripMatches(now)
-				So(bestTrip.Format("15:04"), ShouldEqual, "07:30")
-				So(nextBestTrip.Format("15:04"), ShouldEqual, "11:00")
-			})
-
-			Convey("It should correctly find one best trip", func() {
-				now, _ := time.Parse("15:04", "12:15")
-				bestTrip, nextBestTrip := r.findBestTripMatches(now)
-				So(bestTrip.Format("15:04"), ShouldEqual, "12:55")
-				So(nextBestTrip, ShouldBeNil)
 			})
 		})
 	})

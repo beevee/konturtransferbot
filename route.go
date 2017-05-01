@@ -1,7 +1,7 @@
 package konturtransferbot
 
 import (
-	"sort"
+	"fmt"
 	"time"
 )
 
@@ -31,16 +31,16 @@ func (r Route) String() string {
 	return result
 }
 
-func (r Route) findBestTripMatches(now time.Time) (*Departure, *Departure) {
-	bestDepartureMatch := sort.Search(len(r), func(i int) bool {
-		return r[i].Hour() > now.Hour() || r[i].Hour() == now.Hour() && r[i].Minute() >= now.Minute()
-	})
-	var bestTrip, nextBestTrip *Departure
-	if bestDepartureMatch < len(r) {
-		bestTrip = &r[bestDepartureMatch]
-		if bestDepartureMatch < len(r)-1 {
-			nextBestTrip = &r[bestDepartureMatch+1]
+// StringWithDivider prints current time inside a route schedule
+func (r Route) StringWithDivider(now time.Time) string {
+	nowReset := time.Date(0, time.January, 1, now.Hour(), now.Minute(), 0, 0, &time.Location{})
+
+	var result string
+	for i := range r {
+		if i > 0 && r[i].After(nowReset) && r[i-1].Before(nowReset) {
+			result += fmt.Sprintf("———— сейчас %s ————\n", nowReset.Format("15:04"))
 		}
+		result += r[i].Format("15:04\n")
 	}
-	return bestTrip, nextBestTrip
+	return result
 }

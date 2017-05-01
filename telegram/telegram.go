@@ -10,10 +10,8 @@ import (
 )
 
 const (
-	buttonToOfficeLabel           = "Хочу на работу"
-	buttonFromOfficeLabel         = "Хочу домой"
-	buttonScheduleToOfficeLabel   = "Все рейсы на работу"
-	buttonScheduleFromOfficeLabel = "Все рейсы домой"
+	buttonToOfficeLabel   = "🛠 В офис"
+	buttonFromOfficeLabel = "🍻 Из офиса"
 )
 
 // Bot handles communication with Telegram users
@@ -39,10 +37,10 @@ func (b *Bot) Start() error {
 		ReplyMarkup: telebot.ReplyMarkup{
 			CustomKeyboard: [][]string{
 				[]string{buttonToOfficeLabel, buttonFromOfficeLabel},
-				[]string{buttonScheduleToOfficeLabel, buttonScheduleFromOfficeLabel},
 			},
 			ResizeKeyboard: true,
 		},
+		ParseMode: telebot.ModeMarkdown,
 	}
 
 	messages := make(chan telebot.Message)
@@ -77,26 +75,11 @@ func (b *Bot) handleMessage(message telebot.Message) error {
 
 	switch message.Text {
 	case buttonToOfficeLabel:
-		return b.telebot.SendMessage(message.Chat, b.Schedule.GetBestTripToOfficeText(now), b.defaultMessageOptions)
+		return b.telebot.SendMessage(message.Chat, b.Schedule.GetToOfficeText(now), b.defaultMessageOptions)
 
 	case buttonFromOfficeLabel:
-		return b.telebot.SendMessage(message.Chat, b.Schedule.GetBestTripFromOfficeText(now), b.defaultMessageOptions)
-
-	case buttonScheduleToOfficeLabel:
-		for _, text := range b.Schedule.GetFullToOfficeTexts() {
-			if err := b.telebot.SendMessage(message.Chat, text, b.defaultMessageOptions); err != nil {
-				return err
-			}
-		}
-		return nil
-
-	case buttonScheduleFromOfficeLabel:
-		for _, text := range b.Schedule.GetFullFromOfficeTexts() {
-			if err := b.telebot.SendMessage(message.Chat, text, b.defaultMessageOptions); err != nil {
-				return err
-			}
-		}
-		return nil
+		return b.telebot.SendMessage(message.Chat, b.Schedule.GetFromOfficeText(now), b.defaultMessageOptions)
 	}
+
 	return b.telebot.SendMessage(message.Chat, "Привет! Я могу подсказать расписание трансфера по дежурному маршруту.", b.defaultMessageOptions)
 }

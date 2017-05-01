@@ -35,7 +35,7 @@ func main() {
 	}
 	defer logfile.Close()
 	logger := log.NewLogfmtLogger(log.NewSyncWriter(logfile))
-	logger = log.NewContext(logger).With("ts", log.DefaultTimestampUTC)
+	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 
 	yamlSchedule, err := ioutil.ReadFile(opts.ScheduleYaml)
 	if err != nil {
@@ -57,7 +57,7 @@ func main() {
 		Schedule:      schedule,
 		TelegramToken: opts.TelegramToken,
 		Timezone:      tz,
-		Logger:        log.NewContext(logger).With("component", "telegram"),
+		Logger:        log.With(logger, "component", "telegram"),
 	}
 
 	logger.Log("msg", "starting Telegram bot")

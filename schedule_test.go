@@ -15,14 +15,14 @@ func TestSchedule(t *testing.T) {
   - "08:00"
   - "20:00"
   - "20:30"
-HolidayRouteToOffice:
+SaturdayRouteToOffice:
   - "10:30"
 WorkDayRouteFromOffice:
   - "08:20"
   - "08:50"
   - "20:20"
   - "20:50"
-HolidayRouteFromOffice:
+SaturdayRouteFromOffice:
   - "18:00"`)
 
 		Convey("It should parse into a schedule structure", func() {
@@ -36,68 +36,32 @@ HolidayRouteFromOffice:
 				So(s.WorkDayRouteToOffice[2].Format("15:04"), ShouldEqual, "20:00")
 				So(s.WorkDayRouteToOffice[3].Format("15:04"), ShouldEqual, "20:30")
 
-				So(s.HolidayRouteToOffice[0].Format("15:04"), ShouldEqual, "10:30")
+				So(s.SaturdayRouteToOffice[0].Format("15:04"), ShouldEqual, "10:30")
 
 				So(s.WorkDayRouteFromOffice[0].Format("15:04"), ShouldEqual, "08:20")
 				So(s.WorkDayRouteFromOffice[1].Format("15:04"), ShouldEqual, "08:50")
 				So(s.WorkDayRouteFromOffice[2].Format("15:04"), ShouldEqual, "20:20")
 				So(s.WorkDayRouteFromOffice[3].Format("15:04"), ShouldEqual, "20:50")
 
-				So(s.HolidayRouteFromOffice[0].Format("15:04"), ShouldEqual, "18:00")
+				So(s.SaturdayRouteFromOffice[0].Format("15:04"), ShouldEqual, "18:00")
 			})
 
-			Convey("It should correctly identify Friday as a workday", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 07:00")
-				So(s.findCorrectRoute(now, true).String(), ShouldEqual, s.WorkDayRouteToOffice.String())
-				So(s.findCorrectRoute(now, false).String(), ShouldEqual, s.WorkDayRouteFromOffice.String())
+			Convey("It should draw divider on weekdays", func() {
+				So(s.GetFromOfficeText(time.Date(2017, 5, 2, 19, 45, 0, 0, &time.Location{})),
+					ShouldEqual,
+					"*Офис → Геологическая*\n\n08:20\n08:50\n———— сейчас 19:45 ————\n20:20\n20:50\n\nСубботний рейс в 18:00\n")
+				So(s.GetToOfficeText(time.Date(2017, 5, 2, 19, 45, 0, 0, &time.Location{})),
+					ShouldEqual,
+					"*Геологическая → Офис*\n\n07:30\n08:00\n———— сейчас 19:45 ————\n20:00\n20:30\n\nСубботний рейс в 10:30\n")
 			})
 
-			Convey("It should correctly identify Sunday as a holiday", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "14.08.2016 07:00")
-				So(s.findCorrectRoute(now, true).String(), ShouldEqual, s.HolidayRouteToOffice.String())
-				So(s.findCorrectRoute(now, false).String(), ShouldEqual, s.HolidayRouteFromOffice.String())
-			})
-
-			Convey("It should recommend two best trips from office when possible", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 07:00")
-				So(s.GetBestTripFromOfficeText(now), ShouldEqual, "Ближайший дежурный рейс от офиса будет в 08:20. Следующий - в 08:50.")
-			})
-
-			Convey("It should recommend one best trip from office when possible, and notify that it is the last", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 20:25")
-				So(s.GetBestTripFromOfficeText(now), ShouldEqual, "Ближайший дежурный рейс от офиса будет в 20:50. Это последний на сегодня рейс, дальше - только на такси. "+monetizationMessage)
-			})
-
-			Convey("It should recommend to take a cab from office when no more trips are available", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 23:00")
-				So(s.GetBestTripFromOfficeText(now), ShouldEqual, "В ближайшие несколько часов уехать домой на трансфере не получится :( Придется остаться в офисе или ехать на такси. "+monetizationMessage)
-			})
-
-			Convey("It should recommend two best trips to office when possible", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 07:00")
-				So(s.GetBestTripToOfficeText(now), ShouldEqual, "Ближайший дежурный рейс от Геологической будет в 07:30. Следующий - в 08:00.")
-			})
-
-			Convey("It should recommend one best trip to office when possible, and notify that it is the last", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 20:25")
-				So(s.GetBestTripToOfficeText(now), ShouldEqual, "Ближайший дежурный рейс от Геологической будет в 20:30. Это последний на сегодня рейс.")
-			})
-
-			Convey("It should recommend to get some sleep when no more trips to office are available, and recommend morning trips", func() {
-				now, _ := time.Parse("02.01.2006 15:04", "12.08.2016 23:00")
-				So(s.GetBestTripToOfficeText(now), ShouldEqual, "В ближайшие несколько часов уехать на работу на трансфере не получится. Лучше лечь поспать и поехать с утра. Первые рейсы от Геологической: 10:30.")
-			})
-
-			Convey("It should correctly return whole schedule to office", func() {
-				texts := s.GetFullToOfficeTexts()
-				So(texts[0], ShouldEqual, "Дежурные рейсы от Геологической в будни:\n07:30\n08:00\n20:00\n20:30\n")
-				So(texts[1], ShouldEqual, "Дежурные рейсы от Геологической в выходные:\n10:30\n")
-			})
-
-			Convey("It should correctly return whole schedule from office", func() {
-				texts := s.GetFullFromOfficeTexts()
-				So(texts[0], ShouldEqual, "Дежурные рейсы от офиса в будни:\n08:20\n08:50\n20:20\n20:50\n")
-				So(texts[1], ShouldEqual, "Дежурные рейсы от офиса в выходные:\n18:00\n")
+			Convey("It should not draw divider on weekends", func() {
+				So(s.GetFromOfficeText(time.Date(2017, 5, 6, 19, 45, 0, 0, &time.Location{})),
+					ShouldEqual,
+					"*Офис → Геологическая*\n\n08:20\n08:50\n20:20\n20:50\n\nСубботний рейс в 18:00\n")
+				So(s.GetToOfficeText(time.Date(2017, 5, 6, 19, 45, 0, 0, &time.Location{})),
+					ShouldEqual,
+					"*Геологическая → Офис*\n\n07:30\n08:00\n20:00\n20:30\n\nСубботний рейс в 10:30\n")
 			})
 		})
 	})

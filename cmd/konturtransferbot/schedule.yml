@@ -16,7 +16,7 @@ WorkDayRouteToOffice:
   - 19:10
   - 20:00
   - 20:10
-HolidayRouteToOffice:
+SaturdayRouteToOffice:
   - 10:30
 WorkDayRouteFromOffice:
   - 08:00
@@ -39,5 +39,5 @@ WorkDayRouteFromOffice:
   - 20:50
   - 21:00
   - 21:30
-HolidayRouteFromOffice:
+SaturdayRouteFromOffice:
   - 18:00
