@@ -5,7 +5,7 @@ addons:
   ssh_known_hosts: beevee.ru
 
 go:
-- 1.7
+- 1.8
 
 before_install:
 - go get github.com/mattn/goveralls
