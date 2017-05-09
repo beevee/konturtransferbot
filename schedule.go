@@ -11,23 +11,37 @@ type Schedule struct {
 }
 
 // GetToOfficeText returns text representation of full schedule to office
-func (s Schedule) GetToOfficeText(now time.Time) string {
-	var routeText string
+func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
+	prefix := "Геологическая → Офис\n\n"
+	suffix := "\nСубботний рейс в " + s.SaturdayRouteToOffice.String()
+
+	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
 	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		routeText = s.WorkDayRouteToOffice.String()
-	} else {
-		routeText = s.WorkDayRouteToOffice.StringWithDivider(now)
+		return timeAgnosticRoute, ""
 	}
-	return "*Геологическая → Офис*\n\n" + routeText + "\nСубботний рейс в " + s.SaturdayRouteToOffice.String()
+
+	timeSensitiveRoute := prefix + s.WorkDayRouteToOffice.StringWithDivider(now) + suffix
+	if timeAgnosticRoute == timeSensitiveRoute {
+		return timeAgnosticRoute, ""
+	}
+
+	return timeSensitiveRoute, timeAgnosticRoute
 }
 
 // GetFromOfficeText returns text representation of full schedule from office
-func (s Schedule) GetFromOfficeText(now time.Time) string {
-	var routeText string
+func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
+	prefix := "Офис → Геологическая\n\n"
+	suffix := "\nСубботний рейс в " + s.SaturdayRouteFromOffice.String()
+
+	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
 	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		routeText = s.WorkDayRouteFromOffice.String()
-	} else {
-		routeText = s.WorkDayRouteFromOffice.StringWithDivider(now)
+		return timeAgnosticRoute, ""
 	}
-	return "*Офис → Геологическая*\n\n" + routeText + "\nСубботний рейс в " + s.SaturdayRouteFromOffice.String()
+
+	timeSensitiveRoute := prefix + s.WorkDayRouteFromOffice.StringWithDivider(now) + suffix
+	if timeAgnosticRoute == timeSensitiveRoute {
+		return timeAgnosticRoute, ""
+	}
+
+	return timeSensitiveRoute, timeAgnosticRoute
 }

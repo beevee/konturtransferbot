@@ -5,7 +5,7 @@ import (
 
 	"github.com/beevee/konturtransferbot"
 
-	"github.com/tucnak/telebot"
+	"github.com/vlad-lukyanov/telebot"
 	"gopkg.in/tomb.v2"
 )
 
@@ -16,13 +16,12 @@ const (
 
 // Bot handles communication with Telegram users
 type Bot struct {
-	Schedule              konturtransferbot.Schedule
-	TelegramToken         string
-	Timezone              *time.Location
-	Logger                konturtransferbot.Logger
-	defaultMessageOptions *telebot.SendOptions
-	telebot               *telebot.Bot
-	tomb                  tomb.Tomb
+	Schedule      konturtransferbot.Schedule
+	TelegramToken string
+	Timezone      *time.Location
+	Logger        konturtransferbot.Logger
+	telebot       *telebot.Bot
+	tomb          tomb.Tomb
 }
 
 // Start initializes Telegram request loop
@@ -31,16 +30,6 @@ func (b *Bot) Start() error {
 	b.telebot, err = telebot.NewBot(b.TelegramToken)
 	if err != nil {
 		return err
-	}
-
-	b.defaultMessageOptions = &telebot.SendOptions{
-		ReplyMarkup: telebot.ReplyMarkup{
-			CustomKeyboard: [][]string{
-				[]string{buttonToOfficeLabel, buttonFromOfficeLabel},
-			},
-			ResizeKeyboard: true,
-		},
-		ParseMode: telebot.ModeMarkdown,
 	}
 
 	messages := make(chan telebot.Message)
@@ -75,11 +64,55 @@ func (b *Bot) handleMessage(message telebot.Message) error {
 
 	switch message.Text {
 	case buttonToOfficeLabel:
-		return b.telebot.SendMessage(message.Chat, b.Schedule.GetToOfficeText(now), b.defaultMessageOptions)
+		messageNow, messageLater := b.Schedule.GetToOfficeText(now)
+		return b.sendAndDelayReply(message.Chat, messageNow, messageLater)
 
 	case buttonFromOfficeLabel:
-		return b.telebot.SendMessage(message.Chat, b.Schedule.GetFromOfficeText(now), b.defaultMessageOptions)
+		messageNow, messageLater := b.Schedule.GetFromOfficeText(now)
+		return b.sendAndDelayReply(message.Chat, messageNow, messageLater)
 	}
 
-	return b.telebot.SendMessage(message.Chat, "Привет! Я могу подсказать расписание трансфера по дежурному маршруту.", b.defaultMessageOptions)
+	_, err := b.telebot.SendMessage(
+		message.Chat,
+		"Привет! Я могу подсказать расписание трансфера по дежурному маршруту.",
+		&telebot.SendOptions{
+			ReplyMarkup: telebot.ReplyMarkup{
+				CustomKeyboard: [][]string{
+					[]string{buttonToOfficeLabel, buttonFromOfficeLabel},
+				},
+				ResizeKeyboard: true,
+			},
+			ParseMode: telebot.ModeMarkdown,
+		})
+	return err
+}
+
+func (b *Bot) sendAndDelayReply(chat telebot.Chat, messageNow string, messageLater string) error {
+	message, err := b.telebot.SendMessage(chat, messageNow, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown})
+	if err != nil {
+		b.Logger.Log("msg", "error sending message", "chatid", chat.ID, "messageid", message.ID, "text", messageNow, "error", err)
+		return err
+	}
+	b.Logger.Log("msg", "message sent", "chatid", chat.ID, "messageid", message.ID, "text", messageNow)
+
+	if messageLater != "" {
+		b.tomb.Go(func() error {
+			timer := time.NewTimer(5 * time.Minute)
+			select {
+			case <-timer.C:
+				break
+			case <-b.tomb.Dying():
+				break
+			}
+			_, errEdit := b.telebot.EditMessageText(chat, message.ID, messageLater, nil)
+			if errEdit != nil {
+				b.Logger.Log("msg", "error editing message", "chatid", chat.ID, "messageid", message.ID, "text", messageLater, "error", err)
+				return errEdit
+			}
+			b.Logger.Log("msg", "message edited", "chatid", chat.ID, "messageid", message.ID, "text", messageLater)
+			return nil
+		})
+	}
+
+	return nil
 }

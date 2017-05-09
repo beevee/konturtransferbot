@@ -46,22 +46,28 @@ SaturdayRouteFromOffice:
 				So(s.SaturdayRouteFromOffice[0].Format("15:04"), ShouldEqual, "18:00")
 			})
 
-			Convey("It should draw divider on weekdays", func() {
-				So(s.GetFromOfficeText(time.Date(2017, 5, 2, 19, 45, 0, 0, &time.Location{})),
-					ShouldEqual,
-					"*Офис → Геологическая*\n\n08:20\n08:50\n———— сейчас 19:45 ————\n20:20\n20:50\n\nСубботний рейс в 18:00\n")
-				So(s.GetToOfficeText(time.Date(2017, 5, 2, 19, 45, 0, 0, &time.Location{})),
-					ShouldEqual,
-					"*Геологическая → Офис*\n\n07:30\n08:00\n———— сейчас 19:45 ————\n20:00\n20:30\n\nСубботний рейс в 10:30\n")
+			Convey("It should draw divider on weekdays (from office)", func() {
+				timeSensitiveText, timeAgnosticText := s.GetFromOfficeText(time.Date(2017, 5, 2, 19, 45, 0, 0, &time.Location{}))
+				So(timeSensitiveText, ShouldContainSubstring, "———— сейчас 19:45 ————")
+				So(timeAgnosticText, ShouldNotContainSubstring, "———— сейчас 19:45 ————")
 			})
 
-			Convey("It should not draw divider on weekends", func() {
-				So(s.GetFromOfficeText(time.Date(2017, 5, 6, 19, 45, 0, 0, &time.Location{})),
-					ShouldEqual,
-					"*Офис → Геологическая*\n\n08:20\n08:50\n20:20\n20:50\n\nСубботний рейс в 18:00\n")
-				So(s.GetToOfficeText(time.Date(2017, 5, 6, 19, 45, 0, 0, &time.Location{})),
-					ShouldEqual,
-					"*Геологическая → Офис*\n\n07:30\n08:00\n20:00\n20:30\n\nСубботний рейс в 10:30\n")
+			Convey("It should draw divider on weekdays (to office)", func() {
+				timeSensitiveText, timeAgnosticText := s.GetToOfficeText(time.Date(2017, 5, 2, 19, 45, 0, 0, &time.Location{}))
+				So(timeSensitiveText, ShouldContainSubstring, "———— сейчас 19:45 ————")
+				So(timeAgnosticText, ShouldNotContainSubstring, "———— сейчас 19:45 ————")
+			})
+
+			Convey("It should not draw divider on weekends (from office)", func() {
+				timeSensitiveText, timeAgnosticText := s.GetFromOfficeText(time.Date(2017, 5, 6, 19, 45, 0, 0, &time.Location{}))
+				So(timeSensitiveText, ShouldNotContainSubstring, "———— сейчас 19:45 ————")
+				So(timeAgnosticText, ShouldBeEmpty)
+			})
+
+			Convey("It should not draw divider on weekends (to office)", func() {
+				timeSensitiveText, timeAgnosticText := s.GetToOfficeText(time.Date(2017, 5, 6, 19, 45, 0, 0, &time.Location{}))
+				So(timeSensitiveText, ShouldNotContainSubstring, "———— сейчас 19:45 ————")
+				So(timeAgnosticText, ShouldBeEmpty)
 			})
 		})
 	})
