@@ -104,7 +104,7 @@ func (b *Bot) sendAndDelayReply(chat telebot.Chat, messageNow string, messageLat
 			case <-b.tomb.Dying():
 				break
 			}
-			_, errEdit := b.telebot.EditMessageText(chat, message.ID, messageLater, nil)
+			_, errEdit := b.telebot.EditMessageText(chat, message.ID, messageLater, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown})
 			if errEdit != nil {
 				b.Logger.Log("msg", "error editing message", "chatid", chat.ID, "messageid", message.ID, "text", messageLater, "error", err)
 				return errEdit

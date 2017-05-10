@@ -12,7 +12,7 @@ type Schedule struct {
 
 // GetToOfficeText returns text representation of full schedule to office
 func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
-	prefix := "Геологическая → Офис\n\n"
+	prefix := "*Геологическая → Офис*\n\n"
 	suffix := "\nСубботний рейс в " + s.SaturdayRouteToOffice.String()
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
@@ -30,7 +30,7 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 
 // GetFromOfficeText returns text representation of full schedule from office
 func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
-	prefix := "Офис → Геологическая\n\n"
+	prefix := "*Офис → Геологическая*\n\n"
 	suffix := "\nСубботний рейс в " + s.SaturdayRouteFromOffice.String()
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
