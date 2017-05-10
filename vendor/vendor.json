@@ -11,8 +11,8 @@
 		{
 			"checksumSHA1": "bzCBeQrZ+LxbYyJbp7uDILX6t7c=",
 			"path": "github.com/go-kit/kit/log",
-			"revision": "8a2988aa81f699fc1e647c3c9dddce0113ef1bfb",
-			"revisionTime": "2017-04-24T08:55:41Z"
+			"revision": "d67bb4c202e3b91377d1079b110a6c9ce23ab2f8",
+			"revisionTime": "2017-05-09T15:30:21Z"
 		},
 		{
 			"checksumSHA1": "KxX/Drph+byPXBFIXaCZaCOAnrU=",
@@ -21,10 +21,10 @@
 			"revisionTime": "2016-11-15T14:25:13Z"
 		},
 		{
-			"checksumSHA1": "2sj/DbXoXdnPAfjAEyhS0Jj5QL0=",
+			"checksumSHA1": "VcLNrvCcnZuSnebTxMRyNtzY3ZY=",
 			"path": "github.com/go-stack/stack",
-			"revision": "100eb0c0a9c5b306ca2fb4f165df21d80ada4b82",
-			"revisionTime": "2016-05-14T03:44:11Z"
+			"revision": "7a2f19628aabfe68f0766b59e74d6315f8347d22",
+			"revisionTime": "2017-05-04T03:43:18Z"
 		},
 		{
 			"checksumSHA1": "yIkYzW7bzAD81zHyuCNmEj4+oxQ=",
@@ -39,10 +39,10 @@
 			"revisionTime": "2017-02-12T22:02:46Z"
 		},
 		{
-			"checksumSHA1": "L6/CjN/3IdKLxfaBGRPTJ7e62bg=",
+			"checksumSHA1": "Js/yx9fZ3+wH1wZpHNIxSTMIaCg=",
 			"path": "github.com/jtolds/gls",
-			"revision": "bb0351aa7eb6f322f32667d51375f26a2bca6628",
-			"revisionTime": "2016-12-28T00:43:38Z"
+			"revision": "77f18212c9c7edc9bd6a33d383a7b545ce62f064",
+			"revisionTime": "2017-05-03T22:40:06Z"
 		},
 		{
 			"checksumSHA1": "abKzFXAn0KDr5U+JON1ZgJ2lUtU=",
@@ -57,52 +57,52 @@
 			"revisionTime": "2017-01-16T05:20:23Z"
 		},
 		{
-			"checksumSHA1": "4FUjSj4CbaZxSPOGl2zwfyaSFWI=",
+			"checksumSHA1": "VXwr+VhetrSMVmri1MYFL/mtGlk=",
 			"path": "github.com/smartystreets/assertions",
-			"revision": "c9ee7d9e9a2aeec0bee7c4a516f3e0ad7cb7e558",
-			"revisionTime": "2017-02-13T16:53:18Z"
+			"revision": "6165f082cc33bb8c48bcfcc159170daf07e65bb8",
+			"revisionTime": "2017-05-07T04:12:55Z"
 		},
 		{
 			"checksumSHA1": "Vzb+dEH/LTYbvr8RXHmt6xJHz04=",
 			"path": "github.com/smartystreets/assertions/internal/go-render/render",
-			"revision": "c9ee7d9e9a2aeec0bee7c4a516f3e0ad7cb7e558",
-			"revisionTime": "2017-02-13T16:53:18Z"
+			"revision": "6165f082cc33bb8c48bcfcc159170daf07e65bb8",
+			"revisionTime": "2017-05-07T04:12:55Z"
 		},
 		{
 			"checksumSHA1": "r6FauVdOTFnwYQgrKGFuWUbIAJE=",
 			"path": "github.com/smartystreets/assertions/internal/oglematchers",
-			"revision": "c9ee7d9e9a2aeec0bee7c4a516f3e0ad7cb7e558",
-			"revisionTime": "2017-02-13T16:53:18Z"
+			"revision": "6165f082cc33bb8c48bcfcc159170daf07e65bb8",
+			"revisionTime": "2017-05-07T04:12:55Z"
 		},
 		{
-			"checksumSHA1": "/mwAihy9AmznMzmbPQ5nWJXBiRU=",
+			"checksumSHA1": "f4m09DHEetaanti/GqUJzyCBTaI=",
 			"path": "github.com/smartystreets/goconvey/convey",
-			"revision": "3bd662eac601ad6436e64776af2e112069eb2edc",
-			"revisionTime": "2017-01-10T12:00:22Z"
+			"revision": "af8e7d560364b90f732a1d119d17b5506e50447d",
+			"revisionTime": "2017-05-08T12:12:05Z"
 		},
 		{
 			"checksumSHA1": "9LakndErFi5uCXtY1KWl0iRnT4c=",
 			"path": "github.com/smartystreets/goconvey/convey/gotest",
-			"revision": "3bd662eac601ad6436e64776af2e112069eb2edc",
-			"revisionTime": "2017-01-10T12:00:22Z"
+			"revision": "af8e7d560364b90f732a1d119d17b5506e50447d",
+			"revisionTime": "2017-05-08T12:12:05Z"
 		},
 		{
 			"checksumSHA1": "FWDhk37bhAwZ2363D/L2xePwR64=",
 			"path": "github.com/smartystreets/goconvey/convey/reporting",
-			"revision": "3bd662eac601ad6436e64776af2e112069eb2edc",
-			"revisionTime": "2017-01-10T12:00:22Z"
+			"revision": "af8e7d560364b90f732a1d119d17b5506e50447d",
+			"revisionTime": "2017-05-08T12:12:05Z"
 		},
 		{
-			"checksumSHA1": "JUZ3FF2s4/KCmj5GsP1xYVf6zw8=",
+			"checksumSHA1": "oC0xaYODDJw6cRTHRbfVQZyA4cc=",
 			"path": "github.com/vlad-lukyanov/telebot",
-			"revision": "c2d0e292c6654269a24fadd6ff95e3f73a9beb03",
-			"revisionTime": "2017-03-13T12:51:06Z"
+			"revision": "1d35b625399a61450ac07ebb101c6639822ba62c",
+			"revisionTime": "2017-05-10T07:22:56Z"
 		},
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
 			"path": "golang.org/x/net/context",
-			"revision": "da118f7b8e5954f39d0d2130ab35d4bf0e3cb344",
-			"revisionTime": "2017-04-23T14:02:46Z"
+			"revision": "c9b681d35165f1995d6f3034e61f8761d4b90c99",
+			"revisionTime": "2017-05-10T00:04:54Z"
 		},
 		{
 			"checksumSHA1": "t95/FNK2nGCx3e6IARbO7OrcCuY=",
