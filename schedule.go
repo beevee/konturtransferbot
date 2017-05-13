@@ -30,8 +30,8 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 
 // GetFromOfficeText returns text representation of full schedule from office
 func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
-	prefix := "*Офис → Геологическая*\n\n"
-	suffix := "\nСубботний рейс в " + s.SaturdayRouteFromOffice.String()
+	prefix := "*Рейсы из офиса*\n\n"
+	suffix := "\nСубботний дежурный рейс в " + s.SaturdayRouteFromOffice.String()
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
 	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
