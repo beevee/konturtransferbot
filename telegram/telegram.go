@@ -78,7 +78,7 @@ func (b *Bot) handleMessage(message telebot.Message) error {
 		&telebot.SendOptions{
 			ReplyMarkup: telebot.ReplyMarkup{
 				CustomKeyboard: [][]string{
-					[]string{buttonToOfficeLabel, buttonFromOfficeLabel},
+					{buttonToOfficeLabel, buttonFromOfficeLabel},
 				},
 				ResizeKeyboard: true,
 			},
