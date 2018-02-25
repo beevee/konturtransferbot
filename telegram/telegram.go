@@ -90,7 +90,7 @@ func (b *Bot) handleMessage(message telebot.Message) error {
 func (b *Bot) sendAndDelayReply(chat telebot.Chat, messageNow string, messageLater string) error {
 	message, err := b.telebot.SendMessage(chat, messageNow, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown})
 	if err != nil {
-		b.Logger.Log("msg", "error sending message", "chatid", chat.ID, "messageid", message.ID, "text", messageNow, "error", err)
+		b.Logger.Log("msg", "error sending message", "chatid", chat.ID, "text", messageNow, "error", err)
 		return err
 	}
 	b.Logger.Log("msg", "message sent", "chatid", chat.ID, "messageid", message.ID, "text", messageNow)
