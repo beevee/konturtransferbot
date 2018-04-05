@@ -1,8 +1,10 @@
 FROM golang:alpine as golang
 WORKDIR /go/src/github.com/beevee/konturtransferbot
 COPY . .
-RUN go get github.com/kardianos/govendor
-RUN govendor sync
+RUN apk add --no-cache git mercurial \
+    && go get github.com/kardianos/govendor \
+    && govendor sync \
+    && apk del git mercurial
 # Static build required so that we can safely copy the binary over.
 WORKDIR cmd/konturtransferbot
 RUN CGO_ENABLED=0 go-wrapper install -ldflags '-extldflags "-static"'
