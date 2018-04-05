@@ -6,8 +6,7 @@ RUN apk add --no-cache git mercurial \
     && govendor sync \
     && apk del git mercurial
 # Static build required so that we can safely copy the binary over.
-WORKDIR cmd/konturtransferbot
-RUN CGO_ENABLED=0 go-wrapper install -ldflags '-extldflags "-static"'
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/konturtransferbot github.com/beevee/konturtransferbot/cmd/konturtransferbot
 
 FROM alpine:latest as alpine
 RUN apk --no-cache add tzdata zip ca-certificates
