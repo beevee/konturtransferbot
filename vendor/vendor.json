@@ -51,10 +51,10 @@
 			"revisionTime": "2014-02-26T03:06:59Z"
 		},
 		{
-			"checksumSHA1": "sWdAYPKyaT4SW8hNQNpRS0sU4lU=",
-			"path": "github.com/mitchellh/hashstructure",
-			"revision": "ab25296c0f51f1022f01cd99dfb45f1775de8799",
-			"revisionTime": "2017-01-16T05:20:23Z"
+			"checksumSHA1": "ljd3FhYRJ91cLZz3wsH9BQQ2JbA=",
+			"path": "github.com/pkg/errors",
+			"revision": "816c9085562cd7ee03e7f8188a1cfd942858cded",
+			"revisionTime": "2018-03-11T21:45:15Z"
 		},
 		{
 			"checksumSHA1": "VXwr+VhetrSMVmri1MYFL/mtGlk=",
@@ -93,22 +93,22 @@
 			"revisionTime": "2017-05-08T12:12:05Z"
 		},
 		{
-			"checksumSHA1": "oC0xaYODDJw6cRTHRbfVQZyA4cc=",
-			"path": "github.com/vlad-lukyanov/telebot",
-			"revision": "1d35b625399a61450ac07ebb101c6639822ba62c",
-			"revisionTime": "2017-05-10T07:22:56Z"
-		},
-		{
-			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
+			"checksumSHA1": "GtamqiJoL7PGHsN454AoffBFMa8=",
 			"path": "golang.org/x/net/context",
-			"revision": "c9b681d35165f1995d6f3034e61f8761d4b90c99",
-			"revisionTime": "2017-05-10T00:04:54Z"
+			"revision": "61147c48b25b599e5b561d2e9c4f3e1ef489ca41",
+			"revisionTime": "2017-03-19T02:15:06Z"
 		},
 		{
-			"checksumSHA1": "t95/FNK2nGCx3e6IARbO7OrcCuY=",
-			"path": "gopkg.in/tomb.v2",
-			"revision": "d5d1b5820637886def9eef33e03a27a9f166942c",
-			"revisionTime": "2016-12-08T15:16:19Z"
+			"checksumSHA1": "S0DP7Pn7sZUmXc55IzZnNvERu6s=",
+			"path": "golang.org/x/sync/errgroup",
+			"revision": "1d60e4601c6fd243af51cc01ddf169918a5407ca",
+			"revisionTime": "2018-03-14T17:21:19Z"
+		},
+		{
+			"checksumSHA1": "6Evn2C3Jld6W/Q/bghRLIeTOVZA=",
+			"path": "gopkg.in/tucnak/telebot.v2",
+			"revision": "ab26c41a13a14d620877bc21f61152d3a17493e9",
+			"revisionTime": "2018-04-18T18:57:23Z"
 		},
 		{
 			"checksumSHA1": "fALlQNY1fM99NesfLJ50KguWsio=",

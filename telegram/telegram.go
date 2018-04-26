@@ -1,12 +1,15 @@
 package telegram
 
 import (
+	"context"
+	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/beevee/konturtransferbot"
 
-	"github.com/vlad-lukyanov/telebot"
-	"gopkg.in/tomb.v2"
+	"golang.org/x/sync/errgroup"
+	"gopkg.in/tucnak/telebot.v2"
 )
 
 const (
@@ -19,92 +22,115 @@ type Bot struct {
 	Schedule      konturtransferbot.Schedule
 	TelegramToken string
 	Timezone      *time.Location
+	ProxyURL      *url.URL
 	Logger        konturtransferbot.Logger
 	telebot       *telebot.Bot
-	tomb          tomb.Tomb
+	ctx           context.Context
+	ctxCancel     context.CancelFunc
+	ctxGroup      *errgroup.Group
 }
 
 // Start initializes Telegram request loop
 func (b *Bot) Start() error {
+	transport := &http.Transport{}
+	if b.ProxyURL != nil {
+		transport.Proxy = http.ProxyURL(b.ProxyURL)
+		b.Logger.Log("msg", "working via proxy", "proxy_host", b.ProxyURL.Host,
+			"proxy_user", b.ProxyURL.User.Username(), "proxy_proto", b.ProxyURL.Scheme)
+	}
+	client := http.DefaultClient
+	client.Transport = transport
+
 	var err error
-	b.telebot, err = telebot.NewBot(b.TelegramToken)
+	b.telebot, err = telebot.NewBot(telebot.Settings{
+		Token:  b.TelegramToken,
+		Poller: &telebot.LongPoller{Timeout: 1 * time.Second},
+		Client: client,
+		Reporter: func(err error) {
+			b.Logger.Log("msg", "telebot error", "error", err)
+		},
+	})
 	if err != nil {
 		return err
 	}
 
-	messages := make(chan telebot.Message)
-	b.telebot.Listen(messages, 1*time.Second)
+	b.telebot.Handle(telebot.OnText, b.handleMessage)
 
-	b.tomb.Go(func() error {
-		for {
-			select {
-			case message := <-messages:
-				if err := b.handleMessage(message); err != nil {
-					b.Logger.Log("msg", "error sending message", "error", err)
-				}
-			case <-b.tomb.Dying():
-				return nil
-			}
-		}
-	})
+	b.ctx, b.ctxCancel = context.WithCancel(context.Background())
+	b.ctxGroup, b.ctx = errgroup.WithContext(b.ctx)
+
+	go b.telebot.Start()
 
 	return nil
 }
 
 // Stop gracefully finishes request loop
 func (b *Bot) Stop() error {
-	b.tomb.Kill(nil)
-	return b.tomb.Wait()
+	b.ctxCancel()
+	err := b.ctxGroup.Wait()
+
+	b.telebot.Stop()
+
+	return err
 }
 
-func (b *Bot) handleMessage(message telebot.Message) error {
+func (b *Bot) handleMessage(message *telebot.Message) {
 	now := time.Now().In(b.Timezone)
 
-	b.Logger.Log("msg", "message received", "firstname", message.Sender.FirstName, "lastname", message.Sender.LastName, "username", message.Sender.Username, "chatid", message.Chat.ID, "text", message.Text)
+	b.Logger.Log("msg", "message received", "firstname", message.Sender.FirstName, "lastname",
+		message.Sender.LastName, "username", message.Sender.Username, "chatid", message.Chat.ID, "text", message.Text)
 
 	switch message.Text {
 	case buttonToOfficeLabel:
 		messageNow, messageLater := b.Schedule.GetToOfficeText(now)
-		return b.sendAndDelayReply(message.Chat, messageNow, messageLater)
+		b.sendAndDelayReply(message.Chat, messageNow, messageLater)
+		return
 
 	case buttonFromOfficeLabel:
 		messageNow, messageLater := b.Schedule.GetFromOfficeText(now)
-		return b.sendAndDelayReply(message.Chat, messageNow, messageLater)
+		b.sendAndDelayReply(message.Chat, messageNow, messageLater)
+		return
 	}
 
-	_, err := b.telebot.SendMessage(
+	_, err := b.telebot.Send(
 		message.Chat,
 		"Привет! Я могу подсказать расписание трансфера по дежурному маршруту.",
 		&telebot.SendOptions{
-			ReplyMarkup: telebot.ReplyMarkup{
-				CustomKeyboard: [][]string{
-					{buttonToOfficeLabel, buttonFromOfficeLabel},
+			ReplyMarkup: &telebot.ReplyMarkup{
+				ReplyKeyboard: [][]telebot.ReplyButton{
+					{
+						telebot.ReplyButton{Text: buttonToOfficeLabel},
+						telebot.ReplyButton{Text: buttonFromOfficeLabel},
+					},
 				},
-				ResizeKeyboard: true,
+				ResizeReplyKeyboard: true,
 			},
 			ParseMode: telebot.ModeMarkdown,
 		})
-	return err
+
+	if err != nil {
+		b.Logger.Log("msg", "error sending message", "error", err)
+	}
 }
 
-func (b *Bot) sendAndDelayReply(chat telebot.Chat, messageNow string, messageLater string) error {
-	message, err := b.telebot.SendMessage(chat, messageNow, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown})
+func (b *Bot) sendAndDelayReply(chat *telebot.Chat, messageNow string, messageLater string) {
+	message, err := b.telebot.Send(chat, messageNow, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown})
 	if err != nil {
 		b.Logger.Log("msg", "error sending message", "chatid", chat.ID, "text", messageNow, "error", err)
-		return err
+		return
 	}
 	b.Logger.Log("msg", "message sent", "chatid", chat.ID, "messageid", message.ID, "text", messageNow)
 
 	if messageLater != "" {
-		b.tomb.Go(func() error {
+		b.ctxGroup.Go(func() error {
 			timer := time.NewTimer(5 * time.Minute)
 			select {
 			case <-timer.C:
 				break
-			case <-b.tomb.Dying():
+			case <-b.ctx.Done():
 				break
 			}
-			_, errEdit := b.telebot.EditMessageText(chat, message.ID, messageLater, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown})
+			_, errEdit := b.telebot.Edit(message, messageLater, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown})
 			if errEdit != nil {
 				b.Logger.Log("msg", "error editing message", "chatid", chat.ID, "messageid", message.ID, "text", messageLater, "error", err)
 				return errEdit
@@ -113,6 +139,4 @@ func (b *Bot) sendAndDelayReply(chat telebot.Chat, messageNow string, messageLat
 			return nil
 		})
 	}
-
-	return nil
 }

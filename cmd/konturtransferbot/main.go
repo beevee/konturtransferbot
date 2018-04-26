@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,6 +21,7 @@ func main() {
 		TelegramToken string `short:"t" long:"telegram-token" description:"@KonturTransferBot Telegram token" env:"KONTUR_TRANSFER_BOT_TOKEN"`
 		ScheduleYaml  string `short:"s" long:"schedule-yaml" default:"schedule.yml" description:"YAML file with schedule" env:"KONTUR_TRANSFER_SCHEDULE_YAML"`
 		Timezone      string `short:"z" long:"timezone" default:"Asia/Yekaterinburg" description:"Local timezone" env:"KONTUR_TRANSFER_BOT_TIMEZONE"`
+		ProxyURL      string `short:"p" long:"proxy-url" description:"Telegram proxy URL (socks5:// supported)" env:"KONTUR_TRANSFER_BOT_PROXY"`
 	}
 
 	if _, err := flags.Parse(&opts); err != nil {
@@ -45,10 +47,16 @@ func main() {
 		logger.Log("msg", "failed to recognize timezone", "error", err)
 		os.Exit(1)
 	}
+	proxyURL, err := url.Parse(opts.ProxyURL)
+	if err != nil {
+		logger.Log("msg", "failed to parse proxy URL", "error", err)
+		os.Exit(1)
+	}
 	bot := &telegram.Bot{
 		Schedule:      schedule,
 		TelegramToken: opts.TelegramToken,
 		Timezone:      tz,
+		ProxyURL:      proxyURL,
 		Logger:        log.With(logger, "component", "telegram"),
 	}
 
