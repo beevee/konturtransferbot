@@ -132,7 +132,7 @@ func (b *Bot) sendAndDelayReply(chat *telebot.Chat, messageNow string, messageLa
 			}
 			_, errEdit := b.telebot.Edit(message, messageLater, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown})
 			if errEdit != nil {
-				b.Logger.Log("msg", "error editing message", "chatid", chat.ID, "messageid", message.ID, "text", messageLater, "error", err)
+				b.Logger.Log("msg", "error editing message", "chatid", chat.ID, "messageid", message.ID, "text", messageLater, "error", errEdit)
 				return errEdit
 			}
 			b.Logger.Log("msg", "message edited", "chatid", chat.ID, "messageid", message.ID, "text", messageLater)
