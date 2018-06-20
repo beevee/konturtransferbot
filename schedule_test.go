@@ -48,25 +48,25 @@ SaturdayRouteFromOffice:
 
 			Convey("It should draw divider on weekdays (from office)", func() {
 				timeSensitiveText, timeAgnosticText := s.GetFromOfficeText(time.Date(2017, 5, 2, 19, 45, 0, 0, &time.Location{}))
-				So(timeSensitiveText, ShouldContainSubstring, "———— сейчас 19:45 ————")
-				So(timeAgnosticText, ShouldNotContainSubstring, "———— сейчас 19:45 ————")
+				So(timeSensitiveText, ShouldContainSubstring, "——— сейчас 19:45 ———")
+				So(timeAgnosticText, ShouldNotContainSubstring, "——— сейчас 19:45 ———")
 			})
 
 			Convey("It should draw divider on weekdays (to office)", func() {
 				timeSensitiveText, timeAgnosticText := s.GetToOfficeText(time.Date(2017, 5, 2, 19, 45, 0, 0, &time.Location{}))
-				So(timeSensitiveText, ShouldContainSubstring, "———— сейчас 19:45 ————")
-				So(timeAgnosticText, ShouldNotContainSubstring, "———— сейчас 19:45 ————")
+				So(timeSensitiveText, ShouldContainSubstring, "——— сейчас 19:45 ———")
+				So(timeAgnosticText, ShouldNotContainSubstring, "——— сейчас 19:45 ———")
 			})
 
 			Convey("It should not draw divider on weekends (from office)", func() {
 				timeSensitiveText, timeAgnosticText := s.GetFromOfficeText(time.Date(2017, 5, 6, 19, 45, 0, 0, &time.Location{}))
-				So(timeSensitiveText, ShouldNotContainSubstring, "———— сейчас 19:45 ————")
+				So(timeSensitiveText, ShouldNotContainSubstring, "——— сейчас 19:45 ———")
 				So(timeAgnosticText, ShouldBeEmpty)
 			})
 
 			Convey("It should not draw divider on weekends (to office)", func() {
 				timeSensitiveText, timeAgnosticText := s.GetToOfficeText(time.Date(2017, 5, 6, 19, 45, 0, 0, &time.Location{}))
-				So(timeSensitiveText, ShouldNotContainSubstring, "———— сейчас 19:45 ————")
+				So(timeSensitiveText, ShouldNotContainSubstring, "——— сейчас 19:45 ———")
 				So(timeAgnosticText, ShouldBeEmpty)
 			})
 		})

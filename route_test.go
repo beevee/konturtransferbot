@@ -25,17 +25,17 @@ func TestRoute(t *testing.T) {
 
 		Convey("Divider should be placed correctly inside a schedule", func() {
 			now := time.Date(0, 1, 1, 10, 45, 0, 0, &time.Location{})
-			So(r.StringWithDivider(now), ShouldEqual, "10:30 дежурный\n———— сейчас 10:45 ————\n11:00\n12:30\n")
+			So(r.StringWithDivider(now), ShouldEqual, "10:30 дежурный\n——— сейчас 10:45 ———\n11:00\n12:30\n")
 		})
 
 		Convey("Divider should be placed before departure time if current time is equal to this departure time", func() {
 			now := time.Date(0, 1, 1, 11, 0, 0, 0, &time.Location{})
-			So(r.StringWithDivider(now), ShouldEqual, "10:30 дежурный\n———— сейчас 11:00 ————\n11:00\n12:30\n")
+			So(r.StringWithDivider(now), ShouldEqual, "10:30 дежурный\n——— сейчас 11:00 ———\n11:00\n12:30\n")
 		})
 
 		Convey("Divider calculation should not consider date, only time", func() {
 			now := time.Date(2017, 5, 1, 10, 45, 0, 0, &time.Location{})
-			So(r.StringWithDivider(now), ShouldEqual, "10:30 дежурный\n———— сейчас 10:45 ————\n11:00\n12:30\n")
+			So(r.StringWithDivider(now), ShouldEqual, "10:30 дежурный\n——— сейчас 10:45 ———\n11:00\n12:30\n")
 		})
 
 		Convey("No divider should be placed before first departure", func() {
