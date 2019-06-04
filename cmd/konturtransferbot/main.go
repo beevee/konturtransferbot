@@ -47,10 +47,13 @@ func main() {
 		logger.Log("msg", "failed to recognize timezone", "error", err)
 		os.Exit(1)
 	}
-	proxyURL, err := url.Parse(opts.ProxyURL)
-	if err != nil {
-		logger.Log("msg", "failed to parse proxy URL", "error", err)
-		os.Exit(1)
+	var proxyURL *url.URL
+	if opts.ProxyURL != "" {
+		proxyURL, err = url.Parse(opts.ProxyURL)
+		if err != nil {
+			logger.Log("msg", "failed to parse proxy URL", "error", err)
+			os.Exit(1)
+		}
 	}
 	bot := &telegram.Bot{
 		Schedule:      schedule,
