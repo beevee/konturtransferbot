@@ -52,7 +52,7 @@ func (r Route) StringWithDivider(now time.Time) string {
 	var result string
 	for i := range r {
 		if i > 0 && (r[i].After(nowReset) || r[i].Equal(nowReset)) && r[i-1].Before(nowReset) {
-			result += fmt.Sprintf("——— сейчас %s ———\n", nowReset.Format("15:04"))
+			result += fmt.Sprintf("———— сейчас %s ————\n", nowReset.Format("15:04"))
 		}
 		result += r[i].Format("15:04")
 		if r[i].Comment != "" {
