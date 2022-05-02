@@ -13,10 +13,12 @@ type Schedule struct {
 // GetToOfficeText returns text representation of full schedule to office
 func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы в офис*\n\n"
-	suffix := "\nСубботний рейс в " + s.SaturdayRouteToOffice.String()
+//	suffix := "\nСубботний рейс в " + s.SaturdayRouteToOffice.String()
+	suffix := "\n02.05 и 03.05 праздничные дни - трансфера нет
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
-	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+//	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
 		return timeAgnosticRoute, ""
 	}
 
@@ -31,10 +33,12 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 // GetFromOfficeText returns text representation of full schedule from office
 func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы из офиса*\n\n"
-	suffix := "\nСубботний дежурный в " + s.SaturdayRouteFromOffice.String()
+//	suffix := "\nСубботний дежурный в " + s.SaturdayRouteFromOffice.String()
+	suffix := "\n02.05 и 03.05 праздничные дни - трансфера нет
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
-	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+//	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
 		return timeAgnosticRoute, ""
 	}
 
