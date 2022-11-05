@@ -14,13 +14,13 @@ type Schedule struct {
 func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы в офис*\n\n"
 //	suffix := "\nСубботний рейс в " + s.SaturdayRouteToOffice.String()
-//	suffix := "\n09.05 и 10.05 праздничные дни - трансфера нет"
-	suffix := "\n04.11 праздничный день - трансфера нет"
+	suffix := "\nВ выходные дни трансфера нет"
+//	suffix := "\n04.11 праздничный день - трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
-//	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 //	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
-	if now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+//	if now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 		return timeAgnosticRoute, ""
 	}
 
@@ -36,13 +36,13 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы из офиса*\n\n"
 //	suffix := "\nСубботний дежурный в " + s.SaturdayRouteFromOffice.String()
-//	suffix := "\n09.05 и 10.05 праздничные дни - трансфера нет"
-	suffix := "\n04.11 праздничный день - трансфера нет"
+	suffix := "\nВ выходные дни трансфера нет"
+//	suffix := "\n04.11 праздничный день - трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
-//	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 //	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
-	if now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+//	if now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 		return timeAgnosticRoute, ""
 	}
 
