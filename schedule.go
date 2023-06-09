@@ -14,12 +14,12 @@ type Schedule struct {
 func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы в офис*\n\n"
 //	suffix := "\nСубботний рейс в " + s.SaturdayRouteToOffice.String()
-	suffix := "\nВ выходные дни трансфера нет"
-//	suffix := "\n08 и 09 мая праздничные дни - трансфера нет"
+//	suffix := "\nВ выходные дни трансфера нет"
+	suffix := "\n12 июня праздничный день - трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
-	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-//	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
+//	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
 //	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
 //	if now.Weekday() == time.Thursday || now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 //	if now.Weekday() == time.Wednesday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
@@ -38,12 +38,12 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы из офиса*\n\n"
 //	suffix := "\nСубботний дежурный в " + s.SaturdayRouteFromOffice.String()
-	suffix := "\nВ выходные дни трансфера нет"
-//	suffix := "\n08 и 09 мая праздничные дни - трансфера нет"
+//	suffix := "\nВ выходные дни трансфера нет"
+	suffix := "\n12 июня праздничный день - трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
-	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-//	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
+//	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
 //	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
 //	if now.Weekday() == time.Thursday || now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 //	if now.Weekday() == time.Wednesday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
