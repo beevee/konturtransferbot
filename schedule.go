@@ -20,19 +20,19 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
 	//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
 		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
 		//if now.Weekday() == time.Thursday || now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 		//if now.Weekday() == time.Wednesday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-	return timeAgnosticRoute, ""
-	//}
+		return timeAgnosticRoute, ""
+	}
 
-	//timeSensitiveRoute := prefix + s.WorkDayRouteToOffice.StringWithDivider(now) + suffix
-	//if timeAgnosticRoute == timeSensitiveRoute {
-	//	return timeAgnosticRoute, ""
-	//}
-	//
-	//return timeSensitiveRoute, timeAgnosticRoute
+	timeSensitiveRoute := prefix + s.WorkDayRouteToOffice.StringWithDivider(now) + suffix
+	if timeAgnosticRoute == timeSensitiveRoute {
+		return timeAgnosticRoute, ""
+	}
+
+	return timeSensitiveRoute, timeAgnosticRoute
 }
 
 // GetFromOfficeText returns text representation of full schedule from office
@@ -45,17 +45,17 @@ func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
 	//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
+	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
 		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
 		//if now.Weekday() == time.Thursday || now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 		//if now.Weekday() == time.Wednesday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-	return timeAgnosticRoute, ""
-	//}
+		return timeAgnosticRoute, ""
+	}
 
-	//timeSensitiveRoute := prefix + s.WorkDayRouteFromOffice.StringWithDivider(now) + suffix
-	//if timeAgnosticRoute == timeSensitiveRoute {
-	//	return timeAgnosticRoute, ""
-	//}
-	//
-	//return timeSensitiveRoute, timeAgnosticRoute
+	timeSensitiveRoute := prefix + s.WorkDayRouteFromOffice.StringWithDivider(now) + suffix
+	if timeAgnosticRoute == timeSensitiveRoute {
+		return timeAgnosticRoute, ""
+	}
+
+	return timeSensitiveRoute, timeAgnosticRoute
 }
