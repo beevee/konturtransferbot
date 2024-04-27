@@ -20,7 +20,7 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
 	//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-	if now.Weekday() == time.Sunday || now.Weekday() == time.Manday || now.Weekday() == time.Tuesday || now.Weekday() == time.Wednesday {
+	if now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday || now.Weekday() == time.Wednesday {
 		//if now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
 		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
@@ -47,7 +47,7 @@ func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
 	//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-	if now.Weekday() == time.Sunday || now.Weekday() == time.Manday || now.Weekday() == time.Tuesday || now.Weekday() == time.Wednesday {
+	if now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday || now.Weekday() == time.Wednesday {
 		//if now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
 		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
