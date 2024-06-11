@@ -15,7 +15,7 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы в офис*\n\n"
 	//suffix := "\nСубботний рейс в " + s.SaturdayRouteToOffice.String()
 	//suffix := "\nВ выходные дни трансфера нет"
-	suffix := "\nСр праздничные дни - трансфера нет"
+	suffix := "\n12.06 (Ср) праздничный день - трансфера нет"
 	//suffix := "\nНовогодние каникулы до 8го января - трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
@@ -42,7 +42,7 @@ func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы из офиса*\n\n"
 	//suffix := "\nСубботний дежурный в " + s.SaturdayRouteFromOffice.String()
 	//suffix := "\nВ выходные дни трансфера нет"
-	suffix := "\nСр праздничные дни - трансфера нет"
+	suffix := "\n12.06 (Ср) праздничный день - трансфера нет"
 	//suffix := "\nНовогодние каникулы до 8го января - трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
