@@ -15,7 +15,8 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/jessevdk/go-flags"
 
-	"github.com/rickar/cal"
+	"github.com/rickar/cal/v2"
+	"github.com/rickar/cal/v2/ru"
 )
 
 func main() {
