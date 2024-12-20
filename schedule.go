@@ -1,6 +1,11 @@
 package konturtransferbot
 
-import "time"
+import (
+	"time"
+
+	"github.com/rickar/cal/v2"
+	"github.com/rickar/cal/v2/ru"
+)
 
 // Schedule contains all information on transfer departure times
 type Schedule struct {
@@ -10,22 +15,37 @@ type Schedule struct {
 	SaturdayRouteFromOffice Route
 }
 
+// customCalendar создаёт календарь с российскими праздниками
+func customCalendar() *cal.BusinessCalendar {
+	c := cal.NewBusinessCalendar()
+	// Добавляем российские праздники
+	c.AddHoliday(
+		ru.NewYear,      // Новый Год (1 января)
+		ru.ChristmasDay, // Рождество (7 января)
+		ru.DefenderOfFatherlandDay,
+		ru.InternationalWomenDay,
+		ru.SpringAndLabourDay,
+		ru.VictoryDay,
+		ru.RussiaDay,
+		ru.NationalUnityDay,
+	)
+	return c
+}
+
+// isHoliday проверяет, является ли текущая дата выходным или праздничным днём
+func isHoliday(cal *cal.BusinessCalendar, date time.Time) bool {
+	return !cal.IsWorkday(date)
+}
+
 // GetToOfficeText returns text representation of full schedule to office
 func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы в офис*\n\n"
-	//suffix := "\nСубботний рейс в " + s.SaturdayRouteToOffice.String()
 	suffix := "\nВ выходные дни трансфера нет"
-	//suffix := "\n04.11 (пн) праздничный день - трансфера нет"
-	//suffix := "\nНовогодние каникулы до 8го января - трансфера нет"
+
+	cal := customCalendar() // инициализация календаря
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
-	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		//if now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday || now.Weekday() == time.Wednesday {
-		//if now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
-		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
-		//if now.Weekday() == time.Thursday || now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		//if now.Weekday() == time.Wednesday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+	if isHoliday(cal, now) {
 		return timeAgnosticRoute, ""
 	}
 
@@ -40,19 +60,10 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 // GetFromOfficeText returns text representation of full schedule from office
 func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы из офиса*\n\n"
-	//suffix := "\nСубботний дежурный в " + s.SaturdayRouteFromOffice.String()
 	suffix := "\nВ выходные дни трансфера нет"
-	//suffix := "\n04.11 (пн) праздничный день - трансфера нет"
-	//suffix := "\nНовогодние каникулы до 8го января - трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
-	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		//if now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday || now.Weekday() == time.Wednesday {
-		//if now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday {
-		//if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday || now.Weekday() == time.Monday || now.Weekday() == time.Tuesday {
-		//if now.Weekday() == time.Thursday || now.Weekday() == time.Friday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		//if now.Weekday() == time.Wednesday || now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+	if isHoliday(cal, now) {
 		return timeAgnosticRoute, ""
 	}
 
