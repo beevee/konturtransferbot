@@ -4,6 +4,7 @@ COPY . .
 RUN apk add --no-cache git mercurial \
     && go get github.com/kardianos/govendor \
     && go get github.com/rickar/cal/v2 \
+    && go get github.com/rickar/cal/v2/ru \
     && govendor sync \
     && apk del git mercurial
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/konturtransferbot github.com/beevee/konturtransferbot/cmd/konturtransferbot
