@@ -14,8 +14,6 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/go-kit/kit/log"
 	"github.com/jessevdk/go-flags"
-
-	"github.com/rickar/cal"
 )
 
 func main() {
