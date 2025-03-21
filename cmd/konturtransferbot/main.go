@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"net/url"
 	"os"
 	"os/signal"
@@ -31,13 +30,13 @@ func main() {
 	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 
-	yamlSchedule, err := ioutil.ReadFile(opts.ScheduleYaml)
+	yamlSchedule, err := os.ReadFile(opts.ScheduleYaml)
 	if err != nil {
 		logger.Log("msg", "failed to load schedule YAML file", "error", err)
 		os.Exit(1)
 	}
 	schedule := konturtransferbot.Schedule{}
-	if err = yaml.Unmarshal([]byte(yamlSchedule), &schedule); err != nil {
+	if err = yaml.Unmarshal(yamlSchedule, &schedule); err != nil {
 		logger.Log("msg", "failed to build schedule from YAML", "error", err)
 		os.Exit(1)
 	}

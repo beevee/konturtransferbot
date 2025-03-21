@@ -1,4 +1,4 @@
-FROM golang:1.15-alpine as golang
+FROM golang:1.23-alpine as golang
 WORKDIR /go/src/github.com/beevee/konturtransferbot
 COPY . .
 RUN apk add --no-cache git mercurial \
