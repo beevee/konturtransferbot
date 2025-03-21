@@ -9,25 +9,39 @@ import (
 
 // Schedule contains all information on transfer departure times
 type Schedule struct {
+	TransferRoutes
+	HolidaysCalendar *cal.BusinessCalendar
+}
+
+type TransferRoutes struct {
 	WorkDayRouteToOffice    Route
 	WorkDayRouteFromOffice  Route
 	SaturdayRouteToOffice   Route
 	SaturdayRouteFromOffice Route
 }
 
-// customCalendar создаёт календарь с российскими праздниками
-func customCalendar() *cal.BusinessCalendar {
+// NewSchedule is construct for schedule.
+func NewSchedule(transferSchedule TransferRoutes) Schedule {
+	return Schedule{
+		TransferRoutes:   transferSchedule,
+		HolidaysCalendar: newCustomCalendar(),
+	}
+}
+
+// newCustomCalendar создаёт календарь с российскими праздниками
+func newCustomCalendar() *cal.BusinessCalendar {
 	c := cal.NewBusinessCalendar()
+
 	// Добавляем российские праздники
 	c.AddHoliday(
-		ru.NewYear,      // Новый Год (1 января)
-		ru.ChristmasDay, // Рождество (7 января)
-		ru.DefenderOfFatherlandDay,
-		ru.InternationalWomenDay,
-		ru.SpringAndLabourDay,
+		ru.NewYear,           // Новый Год (1 января)
+		ru.OrthodoxChristmas, // Рождество (7 января)
+		ru.LabourDay,
+		ru.MilitaryDay,
+		ru.UnionDay,
 		ru.VictoryDay,
-		ru.RussiaDay,
-		ru.NationalUnityDay,
+		ru.RussiasDay,
+		ru.WomensDay,
 	)
 	return c
 }
@@ -42,10 +56,8 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы в офис*\n\n"
 	suffix := "\nВ выходные дни трансфера нет"
 
-	cal := customCalendar() // инициализация календаря
-
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
-	if isHoliday(cal, now) {
+	if isHoliday(s.HolidaysCalendar, now) {
 		return timeAgnosticRoute, ""
 	}
 
@@ -63,7 +75,7 @@ func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
 	suffix := "\nВ выходные дни трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
-	if isHoliday(cal, now) {
+	if isHoliday(s.HolidaysCalendar, now) {
 		return timeAgnosticRoute, ""
 	}
 

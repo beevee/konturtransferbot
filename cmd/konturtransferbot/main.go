@@ -35,8 +35,8 @@ func main() {
 		logger.Log("msg", "failed to load schedule YAML file", "error", err)
 		os.Exit(1)
 	}
-	schedule := konturtransferbot.Schedule{}
-	if err = yaml.Unmarshal(yamlSchedule, &schedule); err != nil {
+	transferSchedule := konturtransferbot.TransferRoutes{}
+	if err = yaml.Unmarshal(yamlSchedule, &transferSchedule); err != nil {
 		logger.Log("msg", "failed to build schedule from YAML", "error", err)
 		os.Exit(1)
 	}
@@ -55,7 +55,7 @@ func main() {
 		}
 	}
 	bot := &telegram.Bot{
-		Schedule:      schedule,
+		Schedule:      konturtransferbot.NewSchedule(transferSchedule),
 		TelegramToken: opts.TelegramToken,
 		Timezone:      tz,
 		ProxyURL:      proxyURL,
