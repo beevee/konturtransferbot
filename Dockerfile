@@ -1,10 +1,11 @@
 FROM golang:1.23-alpine as golang
+
+COPY go.mod go.sum /go/src/github.com/beevee/konturtransferbot/
 WORKDIR /go/src/github.com/beevee/konturtransferbot
-COPY . .
-RUN apk add --no-cache git mercurial \
-    && go get github.com/kardianos/govendor \
-    && govendor sync \
-    && apk del git mercurial
+
+RUN go mod download
+COPY . /go/src/github.com/beevee/konturtransferbot
+
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/konturtransferbot github.com/beevee/konturtransferbot/cmd/konturtransferbot
 
 FROM alpine
