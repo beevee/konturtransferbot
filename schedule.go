@@ -54,7 +54,7 @@ func isHoliday(cal *cal.BusinessCalendar, date time.Time) bool {
 // GetToOfficeText returns text representation of full schedule to office
 func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы в офис*\n\n"
-	suffix := "\nВ выходные дни трансфера нет"
+	suffix := "\nВ выходные и праздничные дни трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteToOffice.String() + suffix
 	if isHoliday(s.HolidaysCalendar, now) {
@@ -72,7 +72,7 @@ func (s Schedule) GetToOfficeText(now time.Time) (string, string) {
 // GetFromOfficeText returns text representation of full schedule from office
 func (s Schedule) GetFromOfficeText(now time.Time) (string, string) {
 	prefix := "*Рейсы из офиса*\n\n"
-	suffix := "\nВ выходные дни трансфера нет"
+	suffix := "\nВ выходные и праздничные дни трансфера нет"
 
 	timeAgnosticRoute := prefix + s.WorkDayRouteFromOffice.String() + suffix
 	if isHoliday(s.HolidaysCalendar, now) {
